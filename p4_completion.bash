@@ -13,6 +13,8 @@ function __p4_filenames__()
     COMPREPLY=( $(compgen -f ${cur}) )
 }
 
+__p4_g_opts="-b -c -d -I -G -H -p -P -r -s -u -x -C -Q -L -z -q -V -h"
+
 __p4_cmds="add annotate attribute branch branches change changes changelist changelists client clients copy
     counter counters cstat delete depot depots describe diff diff2 dirs edit filelog files fix fixes flush fstat grep
     group groups have help info integrate integrated interchanges istat job jobs key keys label labels labelsync list
@@ -23,11 +25,6 @@ __p4_cmds="add annotate attribute branch branches change changes changelist chan
 __p4_types="text binary symlink apple resource unicode utf16"
 
 __p4_help_keywords="simple commands charset environment filetypes jobview revisions usage views"
-
-function __p4_commands__()
-{
-    __p4_complete__ "$__p4_cmds"
-}
 
 function __p4_client__()
 {
@@ -1055,15 +1052,32 @@ function _p4_users()
     esac
 }
 
+function __find_p4_cmd__()
+{
+    for word in ${COMP_WORDS[@]:1}; do
+        if [ ${word:0:1} != "-" ]; then
+            echo $word
+            return
+        fi
+    done
+}
+
 function _p4()
 {
     prev=${COMP_WORDS[COMP_CWORD-1]}
     cur=${COMP_WORDS[COMP_CWORD]}
 
-    if [ ${COMP_CWORD} -eq 1 ]; then
-        __p4_commands__
+    local cmd=$(__find_p4_cmd__)
+    if [ -z "$cmd" ]; then
+        case "$cur" in
+            -*)
+                __p4_complete__ "$__p4_g_opts"
+                ;;
+            *)
+                __p4_complete__ "$__p4_cmds"
+                ;;
+        esac
     else
-        local cmd=${COMP_WORDS[1]}
         case "$cmd" in
             add)
                 _p4_add
@@ -1265,6 +1279,9 @@ function _p4()
                 ;;
             workspaces)
                 _p4_clients
+                ;;
+            *)
+                __p4_complete__ "$__p4_cmds"
                 ;;
         esac
     fi
