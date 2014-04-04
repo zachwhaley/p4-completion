@@ -1056,10 +1056,35 @@ function __find_p4_cmd__()
 {
     for word in ${COMP_WORDS[@]:1}; do
         if [ ${word:0:1} != "-" ]; then
-            echo $word
-            return
+            for p4cmd in ${__p4_cmds}; do
+                if [ "$word" == "$p4cmd" ]; then
+                    echo $p4cmd
+                    return
+                fi
+            done
         fi
     done
+}
+
+function __p4_global_opts__()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_clients__)"
+            return ;;
+        -u)
+            __p4_complete__ "$(__p4_users__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "$__p4_g_opts"
+            ;;
+        *)
+            __p4_complete__ "$__p4_cmds"
+            ;;
+    esac
 }
 
 function _p4()
@@ -1069,14 +1094,9 @@ function _p4()
 
     local cmd=$(__find_p4_cmd__)
     if [ -z "$cmd" ]; then
-        case "$cur" in
-            -*)
-                __p4_complete__ "$__p4_g_opts"
-                ;;
-            *)
-                __p4_complete__ "$__p4_cmds"
-                ;;
-        esac
+        __p4_global_opts__
+    elif [ "$cur" == "$cmd" ]; then
+        __p4_complete__ "$__p4_cmds"
     else
         case "$cmd" in
             add)
