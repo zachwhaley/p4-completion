@@ -74,12 +74,12 @@ function __p4_groups__()
 
 function __p4_labels__()
 {
-    echo $(p4 labels | awk '{print $2}')
+    echo $(p4 labels -u $HOME | awk '{print $2}')
 }
 
 function __p4_workspaces__()
 {
-    echo $(p4 workspaces | awk '{print $2}')
+    echo $(p4 workspaces -u $HOME | awk '{print $2}')
 }
 
 # Below are mappings to Perforce commands
