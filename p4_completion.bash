@@ -1265,6 +1265,12 @@ function _p4()
             users)
                 _p4_users
                 ;;
+            workspace)
+                _p4_client
+                ;;
+            workspaces)
+                _p4_clients
+                ;;
         esac
     fi
 }
