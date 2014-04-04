@@ -33,16 +33,12 @@ function __p4_client__()
     echo $(p4 info | awk '/Client name/ {print $3}')
 }
 
+# Takes one argument
+# 1: Status of the changes
 function __p4_changes__()
 {
     local client=$(__p4_client__)
-    echo $(p4 changes -c $client -u $USER -s pending | awk '{print $2}')
-}
-
-function __p4_shelvedchanges__()
-{
-    local client=$(__p4_client__)
-    echo $(p4 changes -c $client -u $USER -s shelved | awk '{print $2}')
+    echo $(p4 changes -c $client -u $USER -s $1 | awk '{print $2}')
 }
 
 function __p4_users__()
@@ -95,7 +91,7 @@ function _p4_add()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return
             ;;
     esac
@@ -191,7 +187,7 @@ function _p4_change()
             __p4_complete__ "-S -f -u -O -d -s -o -i -t -U"
             ;;
         *)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
     esac
 }
 
@@ -233,7 +229,7 @@ function _p4_client()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
     esac
 
@@ -307,7 +303,7 @@ function _p4_delete()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
     esac
 
@@ -340,7 +336,7 @@ function _p4_describe()
             __p4_complete__ "-s -S -f -O"
             ;;
         *)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             ;;
     esac
 }
@@ -379,7 +375,7 @@ function _p4_edit()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
         -t)
             __p4_complete__ "$__p4_types"
@@ -400,7 +396,7 @@ function _p4_filelog()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
     esac
 
@@ -433,7 +429,7 @@ function _p4_fix()
             __p4_complete__ "pending submitted closed"
             return ;;
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
     esac
 
@@ -448,7 +444,7 @@ function _p4_fixes()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
         -j)
             __p4_complete__ "$(__p4_jobs__)"
@@ -553,7 +549,7 @@ function _p4_integrate()
             __p4_complete__ "$(__p4_branches__)"
             return ;;
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
     esac
 
@@ -705,7 +701,7 @@ function _p4_lock()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
     esac
 
@@ -750,7 +746,7 @@ function _p4_merge()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
         -b)
             __p4_complete__ "$(__p4_branches__)"
@@ -771,10 +767,10 @@ function _p4_move()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
         -t)
-            __p4_changes__ "$__p4_types"
+            __p4_changes__ pending "$__p4_types"
             return ;;
     esac
 
@@ -792,7 +788,7 @@ function _p4_opened()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
         -C)
             __p4_complete__ "$(__p4_workspaces__)"
@@ -828,7 +824,7 @@ function _p4_rename()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
         -t)
             __p4_complete__ "$__p4_types"
@@ -849,7 +845,7 @@ function _p4_reopen()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
         -t)
             __p4_complete__ "$__p4_types"
@@ -869,7 +865,7 @@ function _p4_resolve()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
     esac
 
@@ -899,7 +895,7 @@ function _p4_revert()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
     esac
 
@@ -917,7 +913,7 @@ function _p4_review()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
     esac
 
@@ -928,7 +924,7 @@ function _p4_shelve()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
     esac
 
@@ -946,10 +942,10 @@ function _p4_submit()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
         -e)
-            __p4_complete__ "$(__p4_shelvedchanges__)"
+            __p4_complete__ "$(__p4_changes__ shelved)"
             return ;;
         -f)
             __p4_complete__ "submitunchanged submitunchanged+reopen revertunchanged revertunchanged+reopen
@@ -1001,10 +997,10 @@ function _p4_unlock()
 {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
         -s)
-            __p4_complete__ "$(__p4_shelvedchanges__)"
+            __p4_complete__ "$(__p4_changes__ shelved)"
             return ;;
     esac
 
@@ -1022,10 +1018,10 @@ function _p4_unshelve()
 {
     case "$prev" in
         -s)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
         -b)
             __p4_complete__ "$(__p4_branches__)"
