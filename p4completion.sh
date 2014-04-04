@@ -21,6 +21,8 @@ __p4_cmds="add annotate attribute branch branches change changes changelist chan
 
 __p4_types="text binary symlink apple resource unicode utf16"
 
+__p4_help_keywords="simple commands charset environment filetypes jobview revisions usage views"
+
 function __p4_commands__()
 {
     __p4_complete__ "$__p4_cmds"
@@ -35,6 +37,12 @@ function __p4_changes__()
 {
     local client=$(__p4_client__)
     echo $(p4 changes -c $client -u $USER -s pending | awk '{print $2}')
+}
+
+function __p4_shelvedchanges__()
+{
+    # TODO:
+    return
 }
 
 function __p4_users__()
@@ -60,6 +68,26 @@ function __p4_counters__()
 function __p4_depots__()
 {
     echo $(p4 depots | awk '{print $2}')
+}
+
+function __p4_jobs__()
+{
+    echo $(p4 jobs | awk '{print $2}')
+}
+
+function __p4_groups__()
+{
+    echo $(p4 groups | awk '{print $2}')
+}
+
+function __p4_labels__()
+{
+    echo $(p4 labels | awk '{print $2}')
+}
+
+function __p4_workspaces__()
+{
+    echo $(p4 workspaces | awk '{print $2}')
 }
 
 # Below are mappings to Perforce commands
@@ -416,6 +444,640 @@ function _p4_fix()
     esac
 }
 
+function _p4_fixes()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+        -j)
+            __p4_complete__ "$(__p4_jobs__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-i -m -j -c"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_flush()
+{
+    case "$cur" in
+        -*)
+            __p4_complete__ "-f -L -n -q"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_grep()
+{
+    case "$cur" in
+        -*)
+            __p4_complete__ "-e"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_group()
+{
+    case "$cur" in
+        -*)
+            __p4_complete__ "-a -d -o -i"
+            ;;
+        *)
+            __p4_complete__ "$(__p4_groups__)"
+            ;;
+    esac
+}
+
+function _p4_groups()
+{
+    case "$prev" in
+        -u)
+            __p4_complete__ "$(__p4_users__)"
+            return ;;
+        -o)
+            __p4_complete__ "$(__p4_users__)"
+            return ;;
+        -i)
+            __p4_complete__ "$(__p4_users__) $(__p4_groups__)"
+            return ;;
+        -g)
+            __p4_complete__ "$(__p4_groups__)"
+            return ;;
+        -v)
+            __p4_complete__ "$(__p4_groups__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-m -v -i -g -u -o"
+            ;;
+        *)
+            __p4_complete__ "$(__p4_groups__)"
+            ;;
+    esac
+}
+
+function _p4_have()
+{
+    __p4_filenames__
+}
+
+function _p4_help()
+{
+    __p4_complete__ "$__p4_help_keywords $__p4_cmds"
+}
+
+function _p4_info()
+{
+    __p4_complete__ "-s"
+}
+
+function _p4_integrate()
+{
+    case "$prev" in
+        -b)
+            __p4_complete__ "$(__p4_branches__)"
+            return ;;
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-b -S -s -P -Di -f -h -O -n -m -R -q -v"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_integrated()
+{
+    case "$prev" in
+        -b)
+            __p4_complete__ "$(__p4_branches__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-r -b"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_interchanges()
+{
+    case "$prev" in
+        -b)
+            __p4_complete__ "$(__p4_branches__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-b -s -S -f -l -r -t"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_job()
+{
+    case "$cur" in
+        -*)
+            __p4_complete__ "-f -d -o -i"
+            ;;
+        *)
+            __p4_complete__ "$(__p4_jobs__)"
+            ;;
+    esac
+}
+
+function _p4_jobs()
+{
+    case "$cur" in
+        -*)
+            __p4_complete__ "-e -i -l -r -m -R"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_jobspec()
+{
+    __p4_complete__ "-i -o"
+}
+
+function _p4_label()
+{
+    case "$cur" in
+        -*)
+            __p4_complete__ "-f -d -g -t -o"
+            ;;
+        *)
+            __p4_complete__ "$(__p4_labels__)"
+            ;;
+    esac
+}
+
+function _p4_labels()
+{
+    case "$prev" in
+        -u)
+            __p4_complete__ "$(__p4_users__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-t -u -e -m  -U -a -s"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_labelsync()
+{
+    case "$prev" in
+        -l)
+            __p4_complete__ "$(__p4_labels__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-a -d -g -l -n -q"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_list()
+{
+    case "$prev" in
+        -l)
+            __p4_complete__ "$(__p4_labels__)"
+            return ;;
+        -d)
+            __p4_complete__ "$(__p4_labels__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-l -C -M -d"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_lock()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-c"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_lockstat()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_clients__)"
+            return ;;
+    esac
+
+    __p4_complete__ "-c -C"
+}
+
+function _p4_login()
+{
+    __p4_complete__ "-a -h -p -s"
+}
+
+function _p4_logout()
+{
+    case "$prev" in
+        -a)
+            __p4_complete__ "$(__p4_users__)"
+            return ;;
+    esac
+
+    __p4_complete__ "-a"
+}
+
+function _p4_merge()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+        -b)
+            __p4_complete__ "$(__p4_branches__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-c -n -m -q -b -r -s -S -P -F -Ob"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_move()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+        -t)
+            __p4_changes__ "$__p4_types"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-c -t -f -k -n"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_opened()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+        -C)
+            __p4_complete__ "$(__p4_workspaces__)"
+            return ;;
+        -u)
+            __p4_complete__ "$(__p4_users__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-a -c -C -u -m -s -x"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_print()
+{
+    case "$cur" in
+        -*)
+            __p4_complete__ "-a -A -k -o -q -m -U"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_rename()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+        -t)
+            __p4_complete__ "$__p4_types"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-c -f -k -n -t"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_reopen()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+        -t)
+            __p4_complete__ "$__p4_types"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-c -t"
+            ;;
+        *)
+            __p4_filenames__
+    esac
+}
+
+function _p4_resolve()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-am -af -as -at -ay -Aa -Ab -Ac -Ad -At -Am -db -dw -dl -f -n -N -o -t -v -c"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_resolved()
+{
+    case "$cur" in
+        -*)
+            __p4_complete__ "-o"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_revert()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-a -n -k -w -c"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_review()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+    esac
+
+    __p4_complete__ "-c -t"
+}
+
+function _p4_shelve()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-f -i -a -c -d -r -p"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_submit()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+        -e)
+            __p4_complete__ "$(__p4_shelvedchanges__)"
+            return ;;
+        -f)
+            __p4_complete__ "submitunchanged submitunchanged+reopen revertunchanged revertunchanged+reopen
+                leaveunchanged leaveunchanged+reopen"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-c -e -d -f -i -r -s"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_sync()
+{
+    case "$cur" in
+        -*)
+            __p4_complete__ "-f -k -L -m -n -N -p -q -s --parallel"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_tag()
+{
+    case "$prev" in
+        -l)
+            __p4_complete__ "$(__p4_labels__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-d -g -n -U -l"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_unlock()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+        -s)
+            __p4_complete__ "$(__p4_shelvedchanges__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-c -s -x -f"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_unshelve()
+{
+    case "$prev" in
+        -s)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+        -c)
+            __p4_complete__ "$(__p4_changes__)"
+            return ;;
+        -b)
+            __p4_complete__ "$(__p4_branches__)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-s -c -b -S -f -n"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_update()
+{
+    case "$cur" in
+        -*)
+            __p4_complete__ "-L -n -q"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_user()
+{
+    case "$cur" in
+        -*)
+            __p4_complete__ "-f -d -o -i"
+            ;;
+        *)
+            __p4_complete__ "$(__p4_users__)"
+            ;;
+    esac
+}
+
+function _p4_users()
+{
+    case "$cur" in
+        -*)
+            __p4_complete__ "-l -a -r -c -m"
+            ;;
+        *)
+            __p4_complete__ "$(__p4_users__)"
+            ;;
+    esac
+}
+
 function _p4()
 {
     prev=${COMP_WORDS[COMP_CWORD-1]}
@@ -509,6 +1171,114 @@ function _p4()
                 ;;
             fix)
                 _p4_fix
+                ;;
+            flush)
+                _p4_flush
+                ;;
+            grep)
+                _p4_grep
+                ;;
+            group)
+                _p4_group
+                ;;
+            groups)
+                _p4_groups
+                ;;
+            have)
+                _p4_have
+                ;;
+            help)
+                _p4_help
+                ;;
+            info)
+                _p4_info
+                ;;
+            integrate)
+                _p4_integrate
+                ;;
+            integrated)
+                _p4_integrated
+                ;;
+            job)
+                _p4_job
+                ;;
+            jobs)
+                _p4_jobs
+                ;;
+            jobspec)
+                _p4_jobspec
+                ;;
+            label)
+                _p4_label
+                ;;
+            labels)
+                _p4_labels
+                ;;
+            labelsync)
+                _p4_labelsync
+                ;;
+            list)
+                _p4_list
+                ;;
+            lock)
+                _p4_lock
+                ;;
+            lockstat)
+                _p4_lockstat
+                ;;
+            login)
+                _p4_login
+                ;;
+            merge)
+                _p4_merge
+                ;;
+            move)
+                _p4_move
+                ;;
+            print)
+                _p4_print
+                ;;
+            rename)
+                _p4_rename
+                ;;
+            resolve)
+                _p4_resolve
+                ;;
+            resolved)
+                _p4_resolved
+                ;;
+            revert)
+                _p4_revert
+                ;;
+            review)
+                _p4_review
+                ;;
+            shelve)
+                _p4_shelve
+                ;;
+            submit)
+                _p4_submit
+                ;;
+            sync)
+                _p4_sync
+                ;;
+            tag)
+                _p4_tag
+                ;;
+            unlock)
+                _p4_unlock
+                ;;
+            unshelve)
+                _p4_unshelve
+                ;;
+            update)
+                _p4_update
+                ;;
+            user)
+                _p4_user
+                ;;
+            users)
+                _p4_users
                 ;;
         esac
     fi
