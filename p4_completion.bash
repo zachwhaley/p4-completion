@@ -67,11 +67,6 @@ function __p4_depots__()
     echo $(p4 depots | awk '{print $2}')
 }
 
-function __p4_jobs__()
-{
-    echo $(p4 jobs | awk '{print $2}')
-}
-
 function __p4_groups__()
 {
     echo $(p4 groups | awk '{print $2}')
@@ -447,9 +442,6 @@ function _p4_fixes()
         -c)
             __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
-        -j)
-            __p4_complete__ "$(__p4_jobs__)"
-            return ;;
     esac
 
     case "$cur" in
@@ -602,14 +594,7 @@ function _p4_interchanges()
 
 function _p4_job()
 {
-    case "$cur" in
-        -*)
-            __p4_complete__ "-f -d -o -i"
-            ;;
-        *)
-            __p4_complete__ "$(__p4_jobs__)"
-            ;;
-    esac
+    __p4_complete__ "-f -d -o -i"
 }
 
 function _p4_jobs()
