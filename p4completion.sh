@@ -41,8 +41,8 @@ function __p4_changes__()
 
 function __p4_shelvedchanges__()
 {
-    # TODO:
-    return
+    local client=$(__p4_client__)
+    echo $(p4 changes -c $client -u $USER -s shelved | awk '{print $2}')
 }
 
 function __p4_users__()
