@@ -77,11 +77,6 @@ function __p4_labels__()
     echo $(p4 labels -u $HOME | awk '{print $2}')
 }
 
-function __p4_workspaces__()
-{
-    echo $(p4 workspaces -u $HOME | awk '{print $2}')
-}
-
 # Below are mappings to Perforce commands
 function _p4_add()
 {
@@ -777,7 +772,7 @@ function _p4_opened()
             __p4_complete__ "$(__p4_changes__ pending)"
             return ;;
         -C)
-            __p4_complete__ "$(__p4_workspaces__)"
+            __p4_complete__ "$(__p4_clients__)"
             return ;;
         -u)
             __p4_complete__ "$(__p4_users__)"
