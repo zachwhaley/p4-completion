@@ -1232,6 +1232,9 @@ function _p4()
             move)
                 _p4_move
                 ;;
+            open)
+                _p4_edit
+                ;;
             print)
                 _p4_print
                 ;;
