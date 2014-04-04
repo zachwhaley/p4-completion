@@ -1,4 +1,5 @@
-#!/bin/bash
+# A bash completion script for Perforce
+# Author: Zach Whaley, zachbwhaley@gmail.com
 
 # Takes one argument
 # 1: String of commplete strings
