@@ -49,7 +49,7 @@ function __p4_users__()
 
 function __p4_clients__()
 {
-    echo $(p4 clients -u $HOME | awk '{print $2}')
+    echo $(p4 clients -u $USER | awk '{print $2}')
 }
 
 function __p4_branches__()
@@ -74,7 +74,7 @@ function __p4_groups__()
 
 function __p4_labels__()
 {
-    echo $(p4 labels -u $HOME | awk '{print $2}')
+    echo $(p4 labels -u $USER | awk '{print $2}')
 }
 
 # Below are mappings to Perforce commands
