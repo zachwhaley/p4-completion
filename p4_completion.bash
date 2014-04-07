@@ -36,7 +36,7 @@ function __p4_client__()
 function __p4_changes__()
 {
     local client=$(__p4_client__)
-    echo $(p4 changes -c $client -u $USER -s $1 | awk '{print $2}')
+    echo $(p4 changes -c $client -u $P4USER -s $1 | awk '{print $2}')
 }
 
 function __p4_users__()
@@ -46,7 +46,7 @@ function __p4_users__()
 
 function __p4_clients__()
 {
-    echo $(p4 clients -u $USER | awk '{print $2}')
+    echo $(p4 clients -u $P4USER | awk '{print $2}')
 }
 
 function __p4_branches__()
@@ -71,7 +71,7 @@ function __p4_groups__()
 
 function __p4_labels__()
 {
-    echo $(p4 labels -u $USER | awk '{print $2}')
+    echo $(p4 labels -u $P4USER | awk '{print $2}')
 }
 
 # Below are mappings to Perforce commands
