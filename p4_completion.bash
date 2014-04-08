@@ -18,7 +18,7 @@ __p4_g_opts="-b -c -d -I -G -H -p -P -r -s -u -x -C -Q -L -z -q -V -h"
 __p4_cmds="add annotate attribute branch branches change changes changelist changelists client clients copy
     counter counters cstat delete depot depots describe diff diff2 dirs edit filelog files fix fixes flush fstat grep
     group groups have help info integrate integrated interchanges istat job jobs key keys label labels labelsync list
-    lock logger login logout merge move open opened passwd populate print protect protects reconcile rename reopen
+    lock logger login logout merge move opened passwd populate print protect protects reconcile rename reopen
     resolve resolved revert review reviews set shelve status sizes stream streams submit sync tag tickets unlock
     unshelve update user users where workspace workspaces"
 
@@ -1250,9 +1250,6 @@ function _p4()
                 ;;
             move)
                 _p4_move
-                ;;
-            open)
-                _p4_edit
                 ;;
             opened)
                 _p4_opened
