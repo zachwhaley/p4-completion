@@ -9,15 +9,14 @@ Installation
 Copy or link `p4_completion.bash` to /etc/bash_completion.d/
 
 ```bash
-$ sudo cp p4_completion.bash /etc/bash_completion.d/
+$ sudo cp p4_completion.bash /etc/bash_completion.d/p4
 # Or
 $ cd /etc/bash_completion.d/
-$ sudo ln -s /path/to/git_repo/p4_completion.bash p4_completion.bash
+$ sudo ln -s /path/to/git_repo/p4_completion.bash p4
 ```
 
-If bash_completion.d does not exist in your setup, create the directory and source it in your bashrc
+If bash_completion.d does not exist in your setup, you can source the file in your `.bashrc`.
 
 ```bash
-$ sudo mkdir -p /etc/bash_completion.d
-$ echo "for file in /etc/bash_completion.d/*; do source $file; done" >> ~/.bashrc
+$ echo ". /path/to/p4_completion.bash" >> ~/.bashrc
 ```
