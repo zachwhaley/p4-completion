@@ -6,17 +6,17 @@ Bash completion for Perforce.
 Installation
 ------------
 
-Copy or link `p4_completion.bash` to /etc/bash_completion.d/
+Copy or link `p4_completion.bash` to `/etc/bash_completion.d/`
 
 ```bash
 $ sudo cp p4_completion.bash /etc/bash_completion.d/p4
 # Or
 $ cd /etc/bash_completion.d/
-$ sudo ln -s /path/to/git_repo/p4_completion.bash p4
+$ sudo ln -s /path/to/p4_completion.bash p4
 ```
 
-If bash_completion.d does not exist in your setup, you can source the file in your `.bashrc`.
+You can source the script in your `bashrc`, if `/etc/bash_completion.d/` does not exist in your setup.
 
 ```bash
-$ echo ". /path/to/p4_completion.bash" >> ~/.bashrc
+$ echo "source /path/to/p4_completion.bash" >> ~/.bashrc
 ```
