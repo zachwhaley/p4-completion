@@ -26,17 +26,20 @@ __p4_types="text binary symlink apple resource unicode utf16"
 
 __p4_help_keywords="simple commands charset environment filetypes jobview revisions usage views"
 
-function __p4_client__()
+# Takes one argument
+# 1: The Perforce environment variable to return
+function __p4_var__()
 {
-    echo $(p4 set P4CLIENT | awk '{split($1,a,"="); print a[2]}')
+    echo $(p4 set $1 | awk '{split($1,a,"="); print a[2]}')
 }
 
 # Takes one argument
 # 1: Status of the changes
 function __p4_changes__()
 {
-    local client=$(__p4_client__)
-    echo $(p4 changes -c $client -u $P4USER -s $1 | awk '{print $2}')
+    local client=$(__p4_var__ P4CLIENT)
+    local user=$(__p4_var__ P4USER)
+    echo $(p4 changes -c $client -u $user -s $1 | awk '{print $2}')
 }
 
 function __p4_users__()
@@ -46,7 +49,8 @@ function __p4_users__()
 
 function __p4_clients__()
 {
-    echo $(p4 clients -u $P4USER | awk '{print $2}')
+    local user=$(__p4_var__ P4USER)
+    echo $(p4 clients -u $user | awk '{print $2}')
 }
 
 function __p4_branches__()
@@ -71,7 +75,8 @@ function __p4_groups__()
 
 function __p4_labels__()
 {
-    echo $(p4 labels -u $P4USER | awk '{print $2}')
+    local user=$(__p4_var__ P4USER)
+    echo $(p4 labels -u $user | awk '{print $2}')
 }
 
 # Below are mappings to Perforce commands
