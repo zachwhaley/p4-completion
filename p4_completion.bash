@@ -1249,6 +1249,9 @@ function _p4()
             open)
                 _p4_edit
                 ;;
+            opened)
+                _p4_opened
+                ;;
             print)
                 _p4_print
                 ;;
