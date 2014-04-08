@@ -28,7 +28,7 @@ __p4_help_keywords="simple commands charset environment filetypes jobview revisi
 
 function __p4_client__()
 {
-    echo $(p4 info | awk '/Client name/ {print $3}')
+    echo $(p4 set P4CLIENT | awk '{split($1,a,"="); print a[2]}')
 }
 
 # Takes one argument
