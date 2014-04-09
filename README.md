@@ -9,9 +9,16 @@ Installation
 Copy or link `p4_completion.bash` to `/etc/bash_completion.d/`
 
 ```bash
+# Linux
 $ sudo cp p4_completion.bash /etc/bash_completion.d/p4
+# (Mac)OSX
+$ sudo cp p4_completion.bash /opt/local/etc/bash_completion.d/p4
+
 # Or
+# Linux
 $ cd /etc/bash_completion.d/
+# (Mac)OSX
+$ cd /opt/local/etc/bash_completion.d/
 $ sudo ln -s /path/to/p4_completion.bash p4
 ```
 
