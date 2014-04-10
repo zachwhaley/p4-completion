@@ -803,6 +803,24 @@ function _p4_print()
     esac
 }
 
+function _p4_reconcile()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__ pending)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-c -e -a -d -f -I -l -n"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
 function _p4_rename()
 {
     case "$prev" in
@@ -914,6 +932,24 @@ function _p4_shelve()
     case "$cur" in
         -*)
             __p4_complete__ "-f -i -a -c -d -r -p"
+            ;;
+        *)
+            __p4_filenames__
+            ;;
+    esac
+}
+
+function _p4_status()
+{
+    case "$prev" in
+        -c)
+            __p4_complete__ "$(__p4_changes__ pending)"
+            return ;;
+    esac
+
+    case "$cur" in
+        -*)
+            __p4_complete__ "-A -c -e -a -d -f -I -l"
             ;;
         *)
             __p4_filenames__
@@ -1257,6 +1293,9 @@ function _p4()
             print)
                 _p4_print
                 ;;
+            reconcile)
+                _p4_reconcile
+                ;;
             rename)
                 _p4_rename
                 ;;
@@ -1274,6 +1313,9 @@ function _p4()
                 ;;
             shelve)
                 _p4_shelve
+                ;;
+            status)
+                _p4_status
                 ;;
             submit)
                 _p4_submit
