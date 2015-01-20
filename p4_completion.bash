@@ -1299,6 +1299,9 @@ function _p4()
             rename)
                 _p4_rename
                 ;;
+            reopen)
+                _p4_reopen
+                ;;
             resolve)
                 _p4_resolve
                 ;;
