@@ -11,7 +11,11 @@ __p4_filenames() {
     COMPREPLY=( $(compgen -f ${cur}) )
 }
 
-__p4_g_opts="-b -c -d -I -G -H -p -P -r -s -u -x -C -Q -L -z -q -V -h"
+__p4_directories() {
+    COMPREPLY=( $(compgen -d ${cur} ) )
+}
+
+__p4_g_opts="-b -c -C -d -H -I -G -L -p -P -q -r -s -Q -u -x -z"
 
 __p4_cmds="add annotate attribute branch branches change changes changelist changelists clean client clients copy counter counters cstat delete depot depots describe diff diff2 dirs edit filelog files fix fixes flush fstat grep group groups have help info integrate integrated interchanges istat job jobs key keys label labels labelsync list lock logger login logout merge move opened passwd populate print protect protects prune rec reconcile rename reopen resolve resolved revert review reviews set shelve status sizes stream streams submit sync tag tickets unlock unshelve update user users where workspace workspaces"
 
@@ -22,6 +26,8 @@ __p4_streamtypes="mainline virtual development release task"
 __p4_submitopts="submitunchanged submitunchanged+reopen revertunchanged revertunchanged+reopen leaveunchanged leaveunchanged+reopen"
 
 __p4_change_status="pending shelved submitted"
+
+__p4_charsets="auto none eucjp iso8859-1 iso8859-5 iso8859-7 iso8859-15 macosroman shiftjis koi8-r utf8 utf8-bom utf16 and utf16-nobom without utf16le utf16le-bom utf16be utf16be-bom utf32 and utf32-nobom without utf32le utf32le-bom utf32be utf32be-bom cp850 cp858 cp936 cp949 cp950 cp1251 winansi cp1253"
 
 __p4_help_keywords="simple commands charset environment filetypes jobview revisions usage views"
 
@@ -1630,8 +1636,17 @@ __p4_global_opts() {
         -c)
             __p4_complete "$(__p4_clients)"
             return ;;
+        -C)
+            __p4_complete "$__p4_charsets"
+            return ;;
+        -d)
+            __p4_directories
+            return ;;
         -u)
             __p4_complete "$(__p4_users)"
+            return ;;
+        -x)
+            __p4_filenames
             return ;;
     esac
 
