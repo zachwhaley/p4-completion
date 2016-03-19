@@ -213,6 +213,9 @@ _p4_change() {
             __p4_complete "$(__p4_changes pending)"
     esac
 }
+_p4_changelist() {
+    _p4_change
+}
 
 # changes -- Display list of pending and submitted changelists
 # changelists -- synonym for 'changes'
@@ -242,6 +245,9 @@ _p4_changes() {
         *)
             __p4_filenames
     esac
+}
+_p4_changelists() {
+    _p4_changes
 }
 
 # clean -- synonym for 'reconcile -w'
@@ -290,6 +296,9 @@ _p4_client() {
             ;;
     esac
 }
+_p4_workspace() {
+    _p4_client
+}
 
 # clients -- Display list of clients
 # workspaces -- synonym for 'clients'
@@ -308,6 +317,9 @@ _p4_clients() {
     esac
 
     __p4_complete "-t -u -e -E -m -S -a -s -U"
+}
+_p4_workspaces() {
+    _p4_clients
 }
 
 # copy -- Copy one set of files to another
@@ -1048,6 +1060,9 @@ _p4_move() {
             ;;
     esac
 }
+_p4_rename() {
+    _p4_move
+}
 
 # opened -- List open files and display file status
 #
@@ -1207,6 +1222,9 @@ _p4_reconcile() {
             __p4_filenames
             ;;
     esac
+}
+_p4_rec() {
+    _p4_reconcile
 }
 
 # reopen -- Change the filetype of an open file or move it to another changelist
@@ -1670,272 +1688,7 @@ _p4() {
     elif [ "$cur" == "$cmd" ]; then
         __p4_complete "$__p4_cmds"
     else
-        case "$cmd" in
-            add)
-                _p4_add
-                ;;
-            annotate)
-                _p4_annotate
-                ;;
-            attribute)
-                _p4_attribute
-                ;;
-            branch)
-                _p4_branch
-                ;;
-            branches)
-                _p4_branches
-                ;;
-            change)
-                _p4_change
-                ;;
-            changelist)
-                _p4_change
-                ;;
-            changes)
-                _p4_changes
-                ;;
-            changelists)
-                _p4_changes
-                ;;
-            clean)
-                _p4_clean
-                ;;
-            client)
-                _p4_client
-                ;;
-            clients)
-                _p4_clients
-                ;;
-            copy)
-                _p4_copy
-                ;;
-            counter)
-                _p4_counter
-                ;;
-            counters)
-                _p4_counters
-                ;;
-            cstat)
-                _p4_cstat
-                ;;
-            delete)
-                _p4_delete
-                ;;
-            depot)
-                _p4_depot
-                ;;
-            depots)
-                _p4_depots
-                ;;
-            describe)
-                _p4_describe
-                ;;
-            diff)
-                _p4_diff
-                ;;
-            diff2)
-                _p4_diff2
-                ;;
-            dirs)
-                _p4_dirs
-                ;;
-            edit)
-                _p4_edit
-                ;;
-            filelog)
-                _p4_filelog
-                ;;
-            files)
-                _p4_files
-                ;;
-            fix)
-                _p4_fix
-                ;;
-            fixes)
-                _p4_fixes
-                ;;
-            flush)
-                _p4_flush
-                ;;
-            fstat)
-                _p4_fstat
-                ;;
-            grep)
-                _p4_grep
-                ;;
-            group)
-                _p4_group
-                ;;
-            groups)
-                _p4_groups
-                ;;
-            have)
-                _p4_have
-                ;;
-            help)
-                _p4_help
-                ;;
-            info)
-                _p4_info
-                ;;
-            integrate)
-                _p4_integrate
-                ;;
-            integrated)
-                _p4_integrated
-                ;;
-            interchanges)
-                _p4_interchanges
-                ;;
-            istat)
-                _p4_istat
-                ;;
-            job)
-                _p4_job
-                ;;
-            jobs)
-                _p4_jobs
-                ;;
-            key)
-                _p4_key
-                ;;
-            keys)
-                _p4_keys
-                ;;
-            label)
-                _p4_label
-                ;;
-            labels)
-                _p4_labels
-                ;;
-            labelsync)
-                _p4_labelsync
-                ;;
-            list)
-                _p4_list
-                ;;
-            lock)
-                _p4_lock
-                ;;
-            logger)
-                _p4_logger
-                ;;
-            login)
-                _p4_login
-                ;;
-            logout)
-                _p4_logout
-                ;;
-            merge)
-                _p4_merge
-                ;;
-            move)
-                _p4_move
-                ;;
-            opened)
-                _p4_opened
-                ;;
-            passwd)
-                _p4_passwd
-                ;;
-            populate)
-                _p4_populate
-                ;;
-            print)
-                _p4_print
-                ;;
-            protect)
-                _p4_protect
-                ;;
-            protects)
-                _p4_protects
-                ;;
-            prune)
-                _p4_prune
-                ;;
-            reconcile|rec)
-                _p4_reconcile
-                ;;
-            rename)
-                _p4_move
-                ;;
-            reopen)
-                _p4_reopen
-                ;;
-            resolve)
-                _p4_resolve
-                ;;
-            resolved)
-                _p4_resolved
-                ;;
-            revert)
-                _p4_revert
-                ;;
-            review)
-                _p4_review
-                ;;
-            reviews)
-                _p4_reviews
-                ;;
-            set)
-                _p4_set
-                ;;
-            shelve)
-                _p4_shelve
-                ;;
-            status)
-                _p4_status
-                ;;
-            sizes)
-                _p4_sizes
-                ;;
-            stream)
-                _p4_stream
-                ;;
-            streams)
-                _p4_streams
-                ;;
-            submit)
-                _p4_submit
-                ;;
-            sync)
-                _p4_sync
-                ;;
-            tag)
-                _p4_tag
-                ;;
-            tickets)
-                _p4_tickets
-                ;;
-            unlock)
-                _p4_unlock
-                ;;
-            unshelve)
-                _p4_unshelve
-                ;;
-            update)
-                _p4_update
-                ;;
-            user)
-                _p4_user
-                ;;
-            users)
-                _p4_users
-                ;;
-            where)
-                _p4_where
-                ;;
-            workspace)
-                _p4_client
-                ;;
-            workspaces)
-                _p4_clients
-                ;;
-            *)
-                __p4_complete "$__p4_cmds"
-                ;;
-        esac
+        eval "_p4_${cmd}"
     fi
 }
 
