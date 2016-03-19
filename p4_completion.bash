@@ -3,13 +3,11 @@
 
 # Takes one argument
 # 1: String of commplete strings
-function __p4_complete__()
-{
+__p4_complete() {
     COMPREPLY=( $(compgen -W "$1" -- ${cur}) )
 }
 
-function __p4_filenames__()
-{
+__p4_filenames() {
     COMPREPLY=( $(compgen -f ${cur}) )
 }
 
@@ -29,22 +27,19 @@ __p4_help_keywords="simple commands charset environment filetypes jobview revisi
 
 # Takes one argument
 # 1: The Perforce environment variable to return
-function __p4_var__()
-{
+__p4_var() {
     echo $(p4 set $1 | awk '{split($1,a,"="); print a[2]}')
 }
 
-function __p4_vars__()
-{
+__p4_vars() {
     echo $(p4 set | awk -F'=' '{print $1}')
 }
 
 # Takes one argument
 # 1: Status of the changes
-function __p4_changes__()
-{
-    local client=$(__p4_var__ P4CLIENT)
-    local user=$(__p4_var__ P4USER)
+__p4_changes() {
+    local client=$(__p4_var P4CLIENT)
+    local user=$(__p4_var P4USER)
     if [ -z $1 ]; then
         echo $(p4 changes -c $client -u $user | awk '{print $2}')
     else
@@ -52,55 +47,45 @@ function __p4_changes__()
     fi
 }
 
-function __p4_users__()
-{
+__p4_users() {
    echo $(p4 users | awk '{print $1}')
 }
 
-function __p4_clients__()
-{
-    local user=$(__p4_var__ P4USER)
+__p4_clients() {
+    local user=$(__p4_var P4USER)
     echo $(p4 clients -u $user | awk '{print $2}')
 }
 
-function __p4_branches__()
-{
+__p4_branches() {
     echo $(p4 branches | awk '{print $2}')
 }
 
-function __p4_counters__()
-{
+__p4_counters() {
     echo $(p4 counters | awk '{print $1}')
 }
 
-function __p4_depots__()
-{
+__p4_depots() {
     echo $(p4 depots | awk '{print $2}')
 }
 
-function __p4_groups__()
-{
+__p4_groups() {
     echo $(p4 groups | awk '{print $2}')
 }
 
-function __p4_labels__()
-{
-    local user=$(__p4_var__ P4USER)
+__p4_labels() {
+    local user=$(__p4_var P4USER)
     echo $(p4 labels -u $user | awk '{print $2}')
 }
 
-function __p4_streams__()
-{
+__p4_streams() {
     echo $(p4 streams | awk '{print $1}')
 }
 
-function __p4_jobs__()
-{
+__p4_jobs() {
     echo $(p4 jobs | awk '{print $1}')
 }
 
-function __p4_keys__()
-{
+__p4_keys() {
     echo $(p4 keys | awk '{print $1}')
 }
 
@@ -109,23 +94,22 @@ function __p4_keys__()
 # add -- Open a new file to add it to the depot
 #
 # p4 add [-c changelist#] [-d -f -I -n] [-t filetype] file ...
-function _p4_add()
-{
+_p4_add() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
         -t)
-            __p4_complete__ "$__p4_filetypes"
+            __p4_complete "$__p4_filetypes"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-c -d -f -I -n -t"
+            __p4_complete "-c -d -f -I -n -t"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -133,14 +117,13 @@ function _p4_add()
 # annotate -- Print file lines and their revisions
 #
 # p4 annotate [-aciIqtu -d<flags>] file[revRange] ...
-function _p4_annotate()
-{
+_p4_annotate() {
     case "$cur" in
         -*)
-            __p4_complete__ "-a -c -i -I -q -t -d"
+            __p4_complete "-a -c -i -I -q -t -d"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -149,14 +132,13 @@ function _p4_annotate()
 #
 # p4 attribute [-e -f -p] -n name [-v value] files...
 # p4 attribute [-e -f -p] -i -n name file
-function _p4_attribute()
-{
+_p4_attribute() {
     case "$cur" in
         -*)
-            __p4_complete__ "-e -f -p -i -n -v"
+            __p4_complete "-e -f -p -i -n -v"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -167,20 +149,19 @@ function _p4_attribute()
 # p4 branch -d [-f] name
 # p4 branch [ -S stream ] [ -P parent ] -o name
 # p4 branch -i [-f]
-function _p4_branch()
-{
+_p4_branch() {
     case "$prev" in
         -S)
-            __p4_complete__ "$(__p4_streams__)"
+            __p4_complete "$(__p4_streams)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-f -d -S -P -o -i"
+            __p4_complete "-f -d -S -P -o -i"
             ;;
         *)
-            __p4_complete__ "$(__p4_branches__)"
+            __p4_complete "$(__p4_branches)"
             ;;
     esac
 }
@@ -188,15 +169,14 @@ function _p4_branch()
 # branches -- Display list of branch specifications
 #
 # p4 branches [-t] [-u user] [[-e|-E] nameFilter -m max]
-function _p4_branches()
-{
+_p4_branches() {
     case "$prev" in
         -u)
-            __p4_complete__ "$(__p4_users__)"
+            __p4_complete "$(__p4_users)"
             return ;;
     esac
 
-    __p4_complete__ "-t -u -e -E -m"
+    __p4_complete "-t -u -e -E -m"
 }
 
 # change -- Create or edit a changelist description
@@ -209,23 +189,22 @@ function _p4_branches()
 # p4 change -t restricted | public [-U user] [-f|-u|-O|-I] changelist#
 # p4 change -U user [-t restricted | public] [-f] changelist#
 # p4 change -d -f --serverid=X changelist#
-function _p4_change()
-{
+_p4_change() {
     case "$prev" in
         -t)
-            __p4_complete__ "restricted public"
+            __p4_complete "restricted public"
             return ;;
         -U)
-            __p4_complete__ "$(__p4_users__)"
+            __p4_complete "$(__p4_users)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-s -f -u -O -I -d -o -i -t -U"
+            __p4_complete "-s -f -u -O -I -d -o -i -t -U"
             ;;
         *)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
     esac
 }
 
@@ -234,43 +213,41 @@ function _p4_change()
 #
 # p4 changes [-i -t -l -L -f] [-c client] [ -e changelist# ]
 #     [-m max] [-s status] [-u user] [file[revRange] ...]
-function _p4_changes()
-{
+_p4_changes() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_clients__)"
+            __p4_complete "$(__p4_clients)"
             return ;;
         -e)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete "$(__p4_changes)"
             return ;;
         -s)
-            __p4_complete__ "$__p4_change_status"
+            __p4_complete "$__p4_change_status"
             return ;;
         -u)
-            __p4_complete__ "$(__p4_users__)"
+            __p4_complete "$(__p4_users)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-i -t -l -L -f -c -e -m -s -u"
+            __p4_complete "-i -t -l -L -f -c -e -m -s -u"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
     esac
 }
 
 # clean -- synonym for 'reconcile -w'
 #
 # p4 clean [-e -a -d -I -l -n] [file ...]
-function _p4_clean()
-{
+_p4_clean() {
     case "$cur" in
         -*)
-            __p4_complete__ "-e -a -d -I -l -n"
+            __p4_complete "-e -a -d -I -l -n"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
     esac
 }
 
@@ -285,26 +262,25 @@ function _p4_clean()
 # p4 client -s [-f] -t template [name]
 # p4 client -i [-f]
 # p4 client -d -f --serverid=X [-Fs] name
-function _p4_client()
-{
+_p4_client() {
     case "$prev" in
         -t)
-            __p4_complete__ "$(__p4_clients__)"
+            __p4_complete "$(__p4_clients)"
             return ;;
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete "$(__p4_changes)"
             return ;;
         -S)
-            __p4_complete__ "$(__p4_streams__)"
+            __p4_complete "$(__p4_streams)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-f -t -d -Fs -o -S -c -s -i"
+            __p4_complete "-f -t -d -Fs -o -S -c -s -i"
             ;;
         *)
-            __p4_complete__ "$(__p4_clients__)"
+            __p4_complete "$(__p4_clients)"
             ;;
     esac
 }
@@ -315,18 +291,17 @@ function _p4_client()
 # p4 clients [-t] [-u user] [[-e|-E] nameFilter -m max] [-S stream]
 #            [-a | -s serverID]
 # p4 clients -U
-function _p4_clients()
-{
+_p4_clients() {
     case "$prev" in
         -u)
-            __p4_complete__ "$(__p4_users__)"
+            __p4_complete "$(__p4_users)"
             return ;;
         -S)
-            __p4_complete__ "$(__p4_streams__)"
+            __p4_complete "$(__p4_streams)"
             return ;;
     esac
 
-    __p4_complete__ "-t -u -e -E -m -S -a -s -U"
+    __p4_complete "-t -u -e -E -m -S -a -s -U"
 }
 
 # copy -- Copy one set of files to another
@@ -337,26 +312,25 @@ function _p4_clients()
 # p4 copy [options] -S stream [-P parent] [-F] [-r] [toFile[rev] ...]
 #
 # options: -c changelist# -f -n -v -m max -q
-function _p4_copy()
-{
+_p4_copy() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete "$(__p4_changes)"
             return ;;
         -b)
-            __p4_complete__ "$(__p4_branches__)"
+            __p4_complete "$(__p4_branches)"
             return ;;
         -S)
-            __p4_complete__ "$(__p4_streams__)"
+            __p4_complete "$(__p4_streams)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-c -f -n -v -m -q -b -r -s -S -P -F -r"
+            __p4_complete "-c -f -n -v -m -q -b -r -s -S -P -F -r"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -368,14 +342,13 @@ function _p4_copy()
 # p4 counter [-f] -d name
 # p4 counter [-f] -i name
 # p4 counter [-f] -m [ pair list ]
-function _p4_counter()
-{
+_p4_counter() {
     case "$cur" in
         -*)
-            __p4_complete__ "-f -d -i -m"
+            __p4_complete "-f -d -i -m"
             ;;
         *)
-            __p4_complete__ "$(__p4_counters__)"
+            __p4_complete "$(__p4_counters)"
             ;;
     esac
 }
@@ -384,36 +357,33 @@ function _p4_counter()
 # counters -- Display list of known counters
 #
 # p4 counters [-e nameFilter -m max]
-function _p4_counters()
-{
-    __p4_complete__ "-e -m"
+_p4_counters() {
+    __p4_complete "-e -m"
 }
 
 # cstat -- Dump change/sync status for current client
 #
 # p4 cstat [files...]
-function _p4_cstat()
-{
-    __p4_filenames__
+_p4_cstat() {
+    __p4_filenames
 }
 
 # delete -- Open an existing file for deletion from the depot
 #
 # p4 delete [-c changelist#] [-n -v -k] file ...
-function _p4_delete()
-{
+_p4_delete() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-c -n -k -v"
+            __p4_complete "-c -n -k -v"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -424,20 +394,19 @@ function _p4_delete()
 # p4 depot -d [-f] name
 # p4 depot -o name
 # p4 depot -i
-function _p4_depot()
-{
+_p4_depot() {
     case "$prev" in
         -t)
-            __p4_complete__ ""
+            __p4_complete ""
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-t -d -f -o -i"
+            __p4_complete "-t -d -f -o -i"
             ;;
         *)
-            __p4_complete__ "$(__p4_depots__)"
+            __p4_complete "$(__p4_depots)"
             ;;
     esac
 }
@@ -445,22 +414,20 @@ function _p4_depot()
 # depots -- Lists defined depots
 #
 # p4 depots
-function _p4_depots()
-{
-    __p4_complete__ ""
+_p4_depots() {
+    __p4_complete ""
 }
 
 # describe -- Display a changelist description
 #
 # p4 describe [-d<flags> -m -s -S -f -O -I] changelist# ...
-function _p4_describe()
-{
+_p4_describe() {
     case "$cur" in
         -*)
-            __p4_complete__ "-d -m -s -S -f -O -I"
+            __p4_complete "-d -m -s -S -f -O -I"
             ;;
         *)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete "$(__p4_changes)"
             ;;
     esac
 }
@@ -468,14 +435,13 @@ function _p4_describe()
 # diff -- Display diff of client file with depot file
 #
 # p4 diff [-d<flags> -f -m max -Od -s<flag> -t] [file[rev] ...]
-function _p4_diff()
-{
+_p4_diff() {
     case "$cur" in
         -*)
-            __p4_complete__ "-d -f -m -Od -s -t"
+            __p4_complete "-d -f -m -Od -s -t"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -487,23 +453,22 @@ function _p4_diff()
 # p4 diff2 [options] [-S stream] [-P parent] [[fromFile[rev]] toFile[rev]]
 #
 # options: -d<flags> -Od -q -t -u
-function _p4_diff2()
-{
+_p4_diff2() {
     case "$prev" in
         -b)
-            __p4_complete__ "$(__p4_branches__)"
+            __p4_complete "$(__p4_branches)"
             return ;;
         -S)
-            __p4_complete__ "$(__p4_streams__)"
+            __p4_complete "$(__p4_streams)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-d -Od -q -t -u -b -S -P"
+            __p4_complete "-d -Od -q -t -u -b -S -P"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -511,20 +476,19 @@ function _p4_diff2()
 # dirs -- List depot subdirectories
 #
 # p4 dirs [-C -D -H] [-S stream] dir[revRange] ...
-function _p4_dirs()
-{
+_p4_dirs() {
     case "$prev" in
         -S)
-            __p4_complete__ "$(__p4_streams__)"
+            __p4_complete "$(__p4_streams)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-C -D -H -S"
+            __p4_complete "-C -D -H -S"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -532,23 +496,22 @@ function _p4_dirs()
 # edit -- Open an existing file for edit
 #
 # p4 edit [-c changelist#] [-k -n] [-t filetype] file ...
-function _p4_edit()
-{
+_p4_edit() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
         -t)
-            __p4_complete__ "$__p4_filetypes"
+            __p4_complete "$__p4_filetypes"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-c -k -n -t"
+            __p4_complete "-c -k -n -t"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -556,20 +519,19 @@ function _p4_edit()
 # filelog -- List revision history of files
 #
 # p4 filelog [-c changelist# -h -i -l -L -t -m max -p -s] file[revRange] ...
-function _p4_filelog()
-{
+_p4_filelog() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete "$(__p4_changes)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-c -h -i -l -L -t -m -p -s"
+            __p4_complete "-c -h -i -l -L -t -m -p -s"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -578,14 +540,13 @@ function _p4_filelog()
 #
 # p4 files [ -a ] [ -A ] [ -e ] [ -m max ] file[revRange] ...
 # p4 files -U unloadfile ...
-function _p4_files()
-{
+_p4_files() {
     case "$cur" in
         -*)
-            __p4_complete__ "-a -A -e -m -U"
+            __p4_complete "-a -A -e -m -U"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -593,23 +554,22 @@ function _p4_files()
 # fix -- Mark jobs as being fixed by the specified changelist
 #
 # p4 fix [-d] [-s status] -c changelist# jobName ...
-function _p4_fix()
-{
+_p4_fix() {
     case "$prev" in
         -s)
-            __p4_complete__ "$__p4_change_status"
+            __p4_complete "$__p4_change_status"
             return ;;
         -c)
-            __p4_complete__ "$(__p4_changes__ submitted)"
+            __p4_complete "$(__p4_changes submitted)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-d -s -c"
+            __p4_complete "-d -s -c"
             ;;
         *)
-            __p4_complete__ "$(__p4_jobs__)"
+            __p4_complete "$(__p4_jobs)"
             ;;
     esac
 }
@@ -617,36 +577,34 @@ function _p4_fix()
 # fixes -- List jobs with fixes and the changelists that fix them
 #
 # p4 fixes [-i -m max -c changelist# -j jobName] [file[revRange] ...]
-function _p4_fixes()
-{
+_p4_fixes() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ submitted)"
+            __p4_complete "$(__p4_changes submitted)"
             return ;;
         -j)
-            __p4_complete__ "$(__p4_jobs__)"
+            __p4_complete "$(__p4_jobs)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-i -m -c -j"
+            __p4_complete "-i -m -c -j"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
 
 # flush -- synonym for 'sync -k'
-function _p4_flush()
-{
+_p4_flush() {
     case "$cur" in
         -*)
-            __p4_complete__ "-f -L -n -N -q -r -m"
+            __p4_complete "-f -L -n -N -q -r -m"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -655,20 +613,19 @@ function _p4_flush()
 #
 # p4 fstat [-F filter -L -T fields -m max -r] [-c | -e changelist#]
 # [-Ox -Rx -Sx] [-A pattern] [-U] file[rev] ...
-function _p4_fstat()
-{
+_p4_fstat() {
     case "$prev" in
         -c|-e)
-            __p4_complete__ "$(__p4_changes__)"
+            __p4_complete "$(__p4_changes)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-F -L -T -m -r -c -e -O -R -S -A -U"
+            __p4_complete "-F -L -T -m -r -c -e -O -R -S -A -U"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -678,14 +635,13 @@ function _p4_fstat()
 # p4 grep [options] -e pattern file[revRange]...
 #
 # options: -a -i -n -A <num> -B <num> -C <num> -t -s (-v|-l|-L) (-F|-G)
-function _p4_grep()
-{
+_p4_grep() {
     case "$cur" in
         -*)
-            __p4_complete__ "-a -i -n -A -B -C -t -s -v -l -L -F -G -e"
+            __p4_complete "-a -i -n -A -B -C -t -s -v -l -L -F -G -e"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -696,14 +652,13 @@ function _p4_grep()
 # p4 group -d [-a] name
 # p4 group -o name
 # p4 group -i [-a|-A]
-function _p4_group()
-{
+_p4_group() {
     case "$cur" in
         -*)
-            __p4_complete__ "-a -A -d -o -i"
+            __p4_complete "-a -A -d -o -i"
             ;;
         *)
-            __p4_complete__ "$(__p4_groups__)"
+            __p4_complete "$(__p4_groups)"
             ;;
     esac
 }
@@ -713,20 +668,19 @@ function _p4_group()
 # p4 groups [-m max] [-v] [group]
 # p4 groups [-m max] [-i [-v]] user | group
 # p4 groups [-m max] [-g | -u | -o] name
-function _p4_groups()
-{
+_p4_groups() {
     case "$prev" in
         -i)
-            __p4_complete__ "$(__p4_users__) $(__p4_groups__)"
+            __p4_complete "$(__p4_users) $(__p4_groups)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-m -v -i -g -u -o"
+            __p4_complete "-m -v -i -g -u -o"
             ;;
         *)
-            __p4_complete__ "$(__p4_groups__)"
+            __p4_complete "$(__p4_groups)"
             ;;
     esac
 }
@@ -734,25 +688,22 @@ function _p4_groups()
 # have -- List the revisions most recently synced to the current workspace
 #
 # p4 have [file ...]
-function _p4_have()
-{
-    __p4_filenames__
+_p4_have() {
+    __p4_filenames
 }
 
 # help -- Print help message
 #
 # p4 help [command ...]
-function _p4_help()
-{
-    __p4_complete__ "$__p4_help_keywords $__p4_cmds"
+_p4_help() {
+    __p4_complete "$__p4_help_keywords $__p4_cmds"
 }
 
 # info -- Display client/server information
 #
 # p4 info [-s]
-function _p4_info()
-{
-    __p4_complete__ "-s"
+_p4_info() {
+    __p4_complete "-s"
 }
 
 # integrate -- Integrate one set of files into another
@@ -763,26 +714,25 @@ function _p4_info()
 # p4 integrate [options] -S stream [-r] [-P parent] [file[revRange] ...]
 #
 # options: -c changelist# -Di -f -h -O<flags> -n -m max -R<flags> -q -v
-function _p4_integrate()
-{
+_p4_integrate() {
     case "$prev" in
         -b)
-            __p4_complete__ "$(__p4_branches__)"
+            __p4_complete "$(__p4_branches)"
             return ;;
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
         -S)
-            __p4_complete__ "$(__p4_streams__)"
+            __p4_complete "$(__p4_streams)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-c -Di -f -h -O -n -m -R -q -v -b -r -s -S -P"
+            __p4_complete "-c -Di -f -h -O -n -m -R -q -v -b -r -s -S -P"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -790,20 +740,19 @@ function _p4_integrate()
 # integrated -- List integrations that have been submitted
 #
 # p4 integrated [-r] [-b branch] [file ...]
-function _p4_integrated()
-{
+_p4_integrated() {
     case "$prev" in
         -b)
-            __p4_complete__ "$(__p4_branches__)"
+            __p4_complete "$(__p4_branches)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-r -b"
+            __p4_complete "-r -b"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -816,23 +765,22 @@ function _p4_integrated()
 # p4 interchanges [options] -S stream [-P parent] [file[revRange] ...]
 #
 # options: -f -l -r -t -u -F
-function _p4_interchanges()
-{
+_p4_interchanges() {
     case "$prev" in
         -b)
-            __p4_complete__ "$(__p4_branches__)"
+            __p4_complete "$(__p4_branches)"
             return ;;
         -S)
-            __p4_complete__ "$(__p4_streams__)"
+            __p4_complete "$(__p4_streams)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-f -l -r -t -u -F -b -s -S -P"
+            __p4_complete "-f -l -r -t -u -F -b -s -S -P"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -840,14 +788,13 @@ function _p4_interchanges()
 # istat -- Show/cache a stream's integration status
 #
 # p4 istat [ -a -c -r -s ] stream
-function _p4_istat()
-{
+_p4_istat() {
     case "$cur" in
         -*)
-            __p4_complete__ "-a -c -r -s"
+            __p4_complete "-a -c -r -s"
             ;;
         *)
-            __p4_complete__ "$(__p4_streams__)"
+            __p4_complete "$(__p4_streams)"
             ;;
     esac
 }
@@ -858,14 +805,13 @@ function _p4_istat()
 # p4 job -d jobName
 # p4 job -o [jobName]
 # p4 job -i [-f]
-function _p4_job()
-{
+_p4_job() {
     case "$cur" in
         -*)
-            __p4_complete__ "-f -d -o -i"
+            __p4_complete "-f -d -o -i"
             ;;
         *)
-            __p4_complete__ "$(__p4_jobs__)"
+            __p4_complete "$(__p4_jobs)"
             ;;
     esac
 }
@@ -874,14 +820,13 @@ function _p4_job()
 #
 # p4 jobs [-e jobview -i -l -m max -r] [file[revRange] ...]
 # p4 jobs -R
-function _p4_jobs()
-{
+_p4_jobs() {
     case "$cur" in
         -*)
-            __p4_complete__ "-e -i -l -m -r -R"
+            __p4_complete "-e -i -l -m -r -R"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -893,14 +838,13 @@ function _p4_jobs()
 # p4 key [-d] name
 # p4 key [-i] name
 # p4 key [-m] [ pair list ]
-function _p4_key()
-{
+_p4_key() {
     case "$cur" in
         -*)
-            __p4_complete__ "-d -i -m"
+            __p4_complete "-d -i -m"
             ;;
         *)
-            __p4_complete__ "$(__p4_keys__)"
+            __p4_complete "$(__p4_keys)"
             ;;
     esac
 }
@@ -908,9 +852,8 @@ function _p4_key()
 # keys -- Display list of known key/values
 #
 # p4 keys [-e nameFilter -m max]
-function _p4_keys()
-{
-    __p4_complete__ "-e -m"
+_p4_keys() {
+    __p4_complete "-e -m"
 }
 
 # label -- Create or edit a label specification
@@ -919,14 +862,13 @@ function _p4_keys()
 # p4 label -d [-f -g] name
 # p4 label -o [-t template] name
 # p4 label -i [-f -g]
-function _p4_label()
-{
+_p4_label() {
     case "$cur" in
         -*)
-            __p4_complete__ "-f -g -t -d -o -i"
+            __p4_complete "-f -g -t -d -o -i"
             ;;
         *)
-            __p4_complete__ "$(__p4_labels__)"
+            __p4_complete "$(__p4_labels)"
             ;;
     esac
 }
@@ -936,20 +878,19 @@ function _p4_label()
 # p4 labels [-t] [-u user] [[-e|-E] nameFilter -m max] [file[revrange]]
 # p4 labels [-t] [-u user] [[-e|-E] nameFilter -m max] [-a|-s serverID]
 # p4 labels -U
-function _p4_labels()
-{
+_p4_labels() {
     case "$prev" in
         -u)
-            __p4_complete__ "$(__p4_users__)"
+            __p4_complete "$(__p4_users)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-t -u -e -E -m -a -s -U"
+            __p4_complete "-t -u -e -E -m -a -s -U"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -957,20 +898,19 @@ function _p4_labels()
 # labelsync -- Apply the label to the contents of the client workspace
 #
 # p4 labelsync [-a -d -g -n -q] -l label [file[revRange] ...]
-function _p4_labelsync()
-{
+_p4_labelsync() {
     case "$prev" in
         -l)
-            __p4_complete__ "$(__p4_labels__)"
+            __p4_complete "$(__p4_labels)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-a -d -g -n -q -l"
+            __p4_complete "-a -d -g -n -q -l"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -979,20 +919,19 @@ function _p4_labelsync()
 #
 # p4 list [ -l label ] [ -C ] [ -M ] file[revRange] ...
 # p4 list -l label -d [ -M ]
-function _p4_list()
-{
+_p4_list() {
     case "$prev" in
         -l)
-            __p4_complete__ "$(__p4_labels__)"
+            __p4_complete "$(__p4_labels)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-l -C -M -d"
+            __p4_complete "-l -C -M -d"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1001,20 +940,19 @@ function _p4_list()
 #
 # p4 lock [-c changelist#] [file ...]
 # p4 lock -g -c changelist#
-function _p4_lock()
-{
+_p4_lock() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-c -g"
+            __p4_complete "-c -g"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1022,23 +960,21 @@ function _p4_lock()
 # logger -- Report changed jobs and changelists
 #
 # p4 logger [-c sequence#] [-t counter]
-function _p4_logger()
-{
-    __p4_complete__ "-c -t"
+_p4_logger() {
+    __p4_complete "-c -t"
 }
 
 # login -- Log in to Perforce by obtaining a session ticket
 #
 # p4 login [-a -p] [-r <remotespec>] [-h <host>] [user]
 # p4 login [-s] [-r <remotespec>]
-function _p4_login()
-{
+_p4_login() {
     case "$cur" in
         -*)
-            __p4_complete__ "-a -p -r -h -s -r"
+            __p4_complete "-a -p -r -h -s -r"
             ;;
         *)
-            __p4_complete__ "$(__p4_users__)"
+            __p4_complete "$(__p4_users)"
             ;;
     esac
 }
@@ -1046,14 +982,13 @@ function _p4_login()
 # logout -- Log out from Perforce by removing or invalidating a ticket.
 #
 # p4 logout [-a] [user]
-function _p4_logout()
-{
+_p4_logout() {
     case "$cur" in
         -*)
-            __p4_complete__ "-a"
+            __p4_complete "-a"
             ;;
         *)
-            __p4_complete__ "$(__p4_users__)"
+            __p4_complete "$(__p4_users)"
             ;;
     esac
 }
@@ -1064,23 +999,22 @@ function _p4_logout()
 # p4 merge [options] fromFile[revRange] toFile
 #
 # options: -c changelist# -m max -n -Ob -q
-function _p4_merge()
-{
+_p4_merge() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-c -m -n -Ob -q -F --from"
+            __p4_complete "-c -m -n -Ob -q -F --from"
             ;;
         --*)
-            __p4_complete__ "--from"
+            __p4_complete "--from"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1089,23 +1023,22 @@ function _p4_merge()
 # rename -- synonym for 'move'
 #
 # p4 move [-c changelist#] [-f -n -k] [-t filetype] fromFile toFile
-function _p4_move()
-{
+_p4_move() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
         -t)
-            __p4_complete__ "$__p4_filetypes"
+            __p4_complete "$__p4_filetypes"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-c -f -n -k -t"
+            __p4_complete "-c -f -n -k -t"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1114,26 +1047,25 @@ function _p4_move()
 #
 # p4 opened [-a -c changelist# -C client -u user -m max -s -g] [file ...]
 # p4 opened [-a -x -m max ] [file ...]
-function _p4_opened()
-{
+_p4_opened() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
         -C)
-            __p4_complete__ "$(__p4_clients__)"
+            __p4_complete "$(__p4_clients)"
             return ;;
         -u)
-            __p4_complete__ "$(__p4_users__)"
+            __p4_complete "$(__p4_users)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-a -c -C -u -m -s -g -x"
+            __p4_complete "-a -c -C -u -m -s -g -x"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1141,14 +1073,13 @@ function _p4_opened()
 # passwd -- Set the user's password on the server (and Windows client)
 #
 # p4 passwd [-O oldPassword -P newPassword] [user]
-function _p4_passwd()
-{
+_p4_passwd() {
     case "$cur" in
         -*)
-            __p4_complete__ "-O -P"
+            __p4_complete "-O -P"
             ;;
         *)
-            __p4_complete__ "$(__p4_users__)"
+            __p4_complete "$(__p4_users)"
             ;;
     esac
 }
@@ -1161,23 +1092,22 @@ function _p4_passwd()
 # p4 populate [options] -S stream [-P parent] [-r] [toFile[rev]]
 #
 # options: -d description -f -m max -n -o
-function _p4_populate()
-{
+_p4_populate() {
     case "$prev" in
         -b)
-            __p4_complete__ "$(__p4_branches__)"
+            __p4_complete "$(__p4_branches)"
             return ;;
         -S)
-            __p4_complete__ "$(__p4_streams__)"
+            __p4_complete "$(__p4_streams)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-d -f -m -n -o -b -r -s -S -P"
+            __p4_complete "-d -f -m -n -o -b -r -s -S -P"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1186,14 +1116,13 @@ function _p4_populate()
 #
 # p4 print [-a -A -k -o localFile -q -m max] file[revRange] ...
 # p4 print -U unloadfile ...
-function _p4_print()
-{
+_p4_print() {
     case "$cur" in
         -*)
-            __p4_complete__ "-a -A -k -o -q -m -U"
+            __p4_complete "-a -A -k -o -q -m -U"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1203,31 +1132,29 @@ function _p4_print()
 # p4 protect
 # p4 protect -o
 # p4 protect -i
-function _p4_protect()
-{
-    __p4_complete__ "-o -i"
+_p4_protect() {
+    __p4_complete "-o -i"
 }
 
 # protects -- Display protections defined for a specified user and path
 #
 # p4 protects [-a | -g group | -u user] [-h host] [-m] [file ...]
-function _p4_protects()
-{
+_p4_protects() {
     case "$prev" in
         -g)
-            __p4_complete__ "$(__p4_groups__)"
+            __p4_complete "$(__p4_groups)"
             return ;;
         -u)
-            __p4_complete__ "$(__p4_users__)"
+            __p4_complete "$(__p4_users)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-a -g -u -h -m"
+            __p4_complete "-a -g -u -h -m"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1235,15 +1162,14 @@ function _p4_protects()
 # prune -- Remove unmodified branched files from a stream
 #
 # p4 prune [-y] -S stream
-function _p4_prune()
-{
+_p4_prune() {
     case "$prev" in
         -S)
-            __p4_complete__ "$(__p4_streams__)"
+            __p4_complete "$(__p4_streams)"
             return ;;
     esac
 
-    __p4_complete__ "-y -S"
+    __p4_complete "-y -S"
 }
 
 # reconcile -- Open files for add, delete, and/or edit to reconcile
@@ -1260,20 +1186,19 @@ function _p4_prune()
 # p4 clean [-e -a -d -I -l -n] [file ...]
 # p4 reconcile -k [-l -n] [file ...]
 # p4 status -k [file ...]
-function _p4_reconcile()
-{
+_p4_reconcile() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-c -e -a -d -f -I -l -m -n -w"
+            __p4_complete "-c -e -a -d -f -I -l -m -n -w"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1281,23 +1206,22 @@ function _p4_reconcile()
 # reopen -- Change the filetype of an open file or move it to another changelist
 #
 # p4 reopen [-c changelist#] [-t filetype] file ...
-function _p4_reopen()
-{
+_p4_reopen() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
         -t)
-            __p4_complete__ "$__p4_filetypes"
+            __p4_complete "$__p4_filetypes"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-c -t"
+            __p4_complete "-c -t"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
     esac
 }
 
@@ -1306,20 +1230,19 @@ function _p4_reopen()
 # p4 resolve [options] [file ...]
 #
 # options: -A<flags> -a<flags> -d<flags> -f -n -N -o -t -v -c changelist#
-function _p4_resolve()
-{
+_p4_resolve() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-A -a -d -f -n -N -o -t -v -c"
+            __p4_complete "-A -a -d -f -n -N -o -t -v -c"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1327,14 +1250,13 @@ function _p4_resolve()
 # resolved -- Show files that have been resolved but not submitted
 #
 # p4 resolved [-o] [file ...]
-function _p4_resolved()
-{
+_p4_resolved() {
     case "$cur" in
         -*)
-            __p4_complete__ "-o"
+            __p4_complete "-o"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1342,23 +1264,22 @@ function _p4_resolved()
 # revert -- Discard changes from an opened file
 #
 # p4 revert [-a -n -k -w -c changelist# -C client] file ...
-function _p4_revert()
-{
+_p4_revert() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
         -C)
-            __p4_complete__ "$(__p4_clients__)"
+            __p4_complete "$(__p4_clients)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-a -n -k -w -c -C"
+            __p4_complete "-a -n -k -w -c -C"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1366,37 +1287,35 @@ function _p4_revert()
 # review -- List and track changelists (for the review daemon)
 #
 # p4 review [-c changelist#] [-t counter]
-function _p4_review()
-{
+_p4_review() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
     esac
 
-    __p4_complete__ "-c -t"
+    __p4_complete "-c -t"
 }
 
 # reviews -- List the users who are subscribed to review files
 #
 # p4 reviews [-C client] [-c changelist#] [file ...]
-function _p4_reviews()
-{
+_p4_reviews() {
     case "$prev" in
         -C)
-            __p4_complete__ "$(__p4_clients__)"
+            __p4_complete "$(__p4_clients)"
             return ;;
         -c)
-            __p4_complete__ "$(__p4_changes__ submitted)"
+            __p4_complete "$(__p4_changes submitted)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-C -c"
+            __p4_complete "-C -c"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1404,14 +1323,13 @@ function _p4_reviews()
 # set -- Set or display Perforce variables
 #
 # p4 set [-q] [-s -S service] [var=[value]]
-function _p4_set()
-{
+_p4_set() {
     case "$cur" in
         -*)
-            __p4_complete__ "-q -s -S"
+            __p4_complete "-q -s -S"
             ;;
         *)
-            __p4_complete__ "$(__p4_vars__)"
+            __p4_complete "$(__p4_vars)"
             ;;
     esac
 }
@@ -1423,23 +1341,22 @@ function _p4_set()
 # p4 shelve [-Af] [-a option] [-p] -r -c changelist#
 # p4 shelve [-Af] [-a option] [-p] -c changelist# [-f] [file ...]
 # p4 shelve [-As] -d -c changelist# [-f] [file ...]
-function _p4_shelve()
-{
+_p4_shelve() {
     case "$prev" in
         -a)
-            __p4_complete__ "$__p4_submitopts"
+            __p4_complete "$__p4_submitopts"
             return ;;
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-Af -p -a -i -f -r -c -As -d -c"
+            __p4_complete "-Af -p -a -i -f -r -c -As -d -c"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1448,20 +1365,19 @@ function _p4_shelve()
 # status -A -- synonym for 'reconcile -ead' (output uses local paths)
 #
 # p4 status [-c change#] [-A | [-e -a -d] | [-s]] [-f -I -m] [file ...]
-function _p4_status()
-{
+_p4_status() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-c -A -e -a -d -s -f -I -m"
+            __p4_complete "-c -A -e -a -d -s -f -I -m"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1471,14 +1387,13 @@ function _p4_status()
 # p4 sizes [-a -S] [-s | -z] [-b size] [-h|-H] [-m max] file[revRange] ...
 # p4 sizes -A [-a] [-s] [-b size] [-h|-H] [-m max] archivefile...
 # p4 sizes -U unloadfile ...
-function _p4_sizes()
-{
+_p4_sizes() {
     case "$cur" in
         -*)
-            __p4_complete__ "-a -S -s -z -b -h -H -m -A -U"
+            __p4_complete "-a -S -s -z -b -h -H -m -A -U"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1492,23 +1407,22 @@ function _p4_sizes()
 # p4 stream edit
 # p4 stream resolve [-a<flag>] [-n] [-o]
 # p4 stream revert
-function _p4_stream()
-{
+_p4_stream() {
     case "$prev" in
         -t)
-            __p4_complete__ "$(__p4_streamtypes)"
+            __p4_complete "$(__p4_streamtypes)"
             return ;;
         resolve)
-            __p4_complete__ "-a -n -o"
+            __p4_complete "-a -n -o"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-f -d -P -t -o -v -i edit resolve revert"
+            __p4_complete "-f -d -P -t -o -v -i edit resolve revert"
             ;;
         *)
-            __p4_complete__ "$(__p4_streams__)"
+            __p4_complete "$(__p4_streams)"
             ;;
     esac
 }
@@ -1516,9 +1430,8 @@ function _p4_stream()
 # streams -- Display list of streams
 #
 # p4 streams [-U -F filter -T fields -m max] [streamPath ...]
-function _p4_streams()
-{
-    __p4_complete__ "-U -F -T -m"
+_p4_streams() {
+    __p4_complete "-U -F -T -m"
 }
 
 # submit -- Submit open files to the depot
@@ -1530,32 +1443,31 @@ function _p4_streams()
 # p4 submit [-Af -r -f option --noretransfer 0|1] -c changelist#
 # p4 submit -e shelvedChange#
 # p4 submit -i [-Af -r -s -f option]
-function _p4_submit()
-{
+_p4_submit() {
     case "$prev" in
         -f)
-            __p4_complete__ "$__p4_submitopts"
+            __p4_complete "$__p4_submitopts"
             return ;;
         --noretransfer)
-            __p4_complete__ "0 1"
+            __p4_complete "0 1"
             return ;;
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
         -e)
-            __p4_complete__ "$(__p4_changes__ shelved)"
+            __p4_complete "$(__p4_changes shelved)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-Af -r -s -f --noretransfer -d -c -e -i"
+            __p4_complete "-Af -r -s -f --noretransfer -d -c -e -i"
             ;;
         --*)
-            __p4_complete__ "--noretransfer"
+            __p4_complete "--noretransfer"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1567,14 +1479,13 @@ function _p4_submit()
 # p4 sync [-f -L -n -N -k -q -r] [-m max] [file[revRange] ...]
 # p4 sync [-L -n -N -q -s] [-m max] [file[revRange] ...]
 # p4 sync [-L -n -N -p -q] [-m max] [file[revRange] ...]
-function _p4_sync()
-{
+_p4_sync() {
     case "$cur" in
         -*)
-            __p4_complete__ "-f -L -n -N -k -q -r -m -s -p"
+            __p4_complete "-f -L -n -N -k -q -r -m -s -p"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1582,20 +1493,19 @@ function _p4_sync()
 # tag -- Tag files with a label
 #
 # p4 tag [-d -g -n -U] -l label file[revRange] ...
-function _p4_tag()
-{
+_p4_tag() {
     case "$prev" in
         -l)
-            __p4_complete__ "$(__p4_labels__)"
+            __p4_complete "$(__p4_labels)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-d -g -n -U -l"
+            __p4_complete "-d -g -n -U -l"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1604,23 +1514,22 @@ function _p4_tag()
 #
 # p4 unlock [-c | -s changelist# | -x] [-f] [file ...]
 # p4 -c client unlock [-f] -r
-function _p4_unlock()
-{
+_p4_unlock() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
         -s)
-            __p4_complete__ "$(__p4_changes__ shelved)"
+            __p4_complete "$(__p4_changes shelved)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-c -s -x -f -r"
+            __p4_complete "-c -s -x -f -r"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1630,39 +1539,37 @@ function _p4_unlock()
 # p4 unshelve -s changelist# [options] [file ...]
 # Options: [-A<f|s> -f -n] [-c changelist#]
 #          [-b branch|-S stream [-P parent]]
-function _p4_unshelve()
-{
+_p4_unshelve() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_changes__ pending)"
+            __p4_complete "$(__p4_changes pending)"
             return ;;
         -b)
-            __p4_complete__ "$(__p4_branches__)"
+            __p4_complete "$(__p4_branches)"
             return ;;
         -S)
-            __p4_complete__ "$(__p4_streams__)"
+            __p4_complete "$(__p4_streams)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "-Af -As -f -n -c -b -S -P"
+            __p4_complete "-Af -As -f -n -c -b -S -P"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
 
 # update -- synonym for 'sync -s'
-function _p4_update()
-{
+_p4_update() {
     case "$cur" in
         -*)
-            __p4_complete__ "-L -n -N -q -m"
+            __p4_complete "-L -n -N -q -m"
             ;;
         *)
-            __p4_filenames__
+            __p4_filenames
             ;;
     esac
 }
@@ -1673,14 +1580,13 @@ function _p4_update()
 # p4 user -d [-f] name
 # p4 user -o [name]
 # p4 user -i [-f]
-function _p4_user()
-{
+_p4_user() {
     case "$cur" in
         -*)
-            __p4_complete__ "-f -d -o -i"
+            __p4_complete "-f -d -o -i"
             ;;
         *)
-            __p4_complete__ "$(__p4_users__)"
+            __p4_complete "$(__p4_users)"
             ;;
     esac
 }
@@ -1688,14 +1594,13 @@ function _p4_user()
 # users -- List Perforce users
 #
 # p4 users [-l -a -r -c] [-m max] [user ...]
-function _p4_users()
-{
+_p4_users() {
     case "$cur" in
         -*)
-            __p4_complete__ "-l -a -r -c -m"
+            __p4_complete "-l -a -r -c -m"
             ;;
         *)
-            __p4_complete__ "$(__p4_users__)"
+            __p4_complete "$(__p4_users)"
             ;;
     esac
 }
@@ -1703,13 +1608,11 @@ function _p4_users()
 # where -- Show how file names are mapped by the client view
 #
 # p4 where [file ...]
-function _p4_where()
-{
-    __p4_filenames__
+_p4_where() {
+    __p4_filenames
 }
 
-function __find_p4_cmd__()
-{
+__find_p4_cmd() {
     for word in ${COMP_WORDS[@]:1}; do
         if [ ${word:0:1} != "-" ]; then
             for p4cmd in ${__p4_cmds}; do
@@ -1722,37 +1625,35 @@ function __find_p4_cmd__()
     done
 }
 
-function __p4_global_opts__()
-{
+__p4_global_opts() {
     case "$prev" in
         -c)
-            __p4_complete__ "$(__p4_clients__)"
+            __p4_complete "$(__p4_clients)"
             return ;;
         -u)
-            __p4_complete__ "$(__p4_users__)"
+            __p4_complete "$(__p4_users)"
             return ;;
     esac
 
     case "$cur" in
         -*)
-            __p4_complete__ "$__p4_g_opts"
+            __p4_complete "$__p4_g_opts"
             ;;
         *)
-            __p4_complete__ "$__p4_cmds"
+            __p4_complete "$__p4_cmds"
             ;;
     esac
 }
 
-function _p4()
-{
+_p4() {
     prev=${COMP_WORDS[COMP_CWORD-1]}
     cur=${COMP_WORDS[COMP_CWORD]}
 
-    local cmd=$(__find_p4_cmd__)
+    local cmd=$(__find_p4_cmd)
     if [ -z "$cmd" ]; then
-        __p4_global_opts__
+        __p4_global_opts
     elif [ "$cur" == "$cmd" ]; then
-        __p4_complete__ "$__p4_cmds"
+        __p4_complete "$__p4_cmds"
     else
         case "$cmd" in
             add)
@@ -2017,7 +1918,7 @@ function _p4()
                 _p4_clients
                 ;;
             *)
-                __p4_complete__ "$__p4_cmds"
+                __p4_complete "$__p4_cmds"
                 ;;
         esac
     fi
