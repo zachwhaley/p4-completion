@@ -15,6 +15,13 @@ __p4_directories() {
     COMPREPLY=( $(compgen -d ${cur} ) )
 }
 
+# Takes one arguments
+# 1: String of flags
+__p4_compflags() {
+    local opts=$(echo "$1" | sed "s/[${cur}]//g" | sed -r "s/[^ ]+/${cur}&/g")
+    __p4_complete "$opts"
+}
+
 __p4_g_opts="-b -c -C -d -H -I -G -L -p -P -q -r -s -Q -u -x -z"
 
 __p4_cmds="add annotate attribute branch branches change changes changelist changelists clean client clients copy counter counters cstat delete depot depots describe diff diff2 dirs edit filelog files fix fixes flush fstat grep group groups have help info integrate integrated interchanges istat job jobs key keys label labels labelsync list lock logger login logout merge move opened passwd populate print protect protects prune rec reconcile rename reopen resolve resolved revert review reviews set shelve status sizes stream streams submit sync tag tickets unlock unshelve update user users where workspace workspaces"
@@ -125,6 +132,9 @@ _p4_add() {
 # p4 annotate [-aciIqtu -d<flags>] file[revRange] ...
 _p4_annotate() {
     case "$cur" in
+        -d*)
+            __p4_compflags "b w l"
+            ;;
         -*)
             __p4_complete "-a -c -i -I -q -t -d"
             ;;
@@ -441,6 +451,9 @@ _p4_depots() {
 # p4 describe [-d<flags> -m -s -S -f -O -I] changelist# ...
 _p4_describe() {
     case "$cur" in
+        -d*)
+            __p4_compflags "n c s u b w l"
+            ;;
         -*)
             __p4_complete "-d -m -s -S -f -O -I"
             ;;
@@ -455,6 +468,12 @@ _p4_describe() {
 # p4 diff [-d<flags> -f -m max -Od -s<flag> -t] [file[rev] ...]
 _p4_diff() {
     case "$cur" in
+        -d*)
+            __p4_compflags "n c s u b w l"
+            ;;
+        -s*)
+            __p4_compflags "a b d e l r"
+            ;;
         -*)
             __p4_complete "-d -f -m -Od -s -t"
             ;;
@@ -473,6 +492,9 @@ _p4_diff() {
 # options: -d<flags> -Od -q -t -u
 _p4_diff2() {
     case "$prev" in
+        -d*)
+            __p4_compflags "n c s u b w l"
+            ;;
         -b)
             __p4_complete "$(__p4_branches)"
             return ;;
@@ -734,6 +756,12 @@ _p4_info() {
 # options: -c changelist# -Di -f -h -O<flags> -n -m max -R<flags> -q -v
 _p4_integrate() {
     case "$prev" in
+        -O*)
+            __p4_compflags "b r"
+            ;;
+        -R*)
+            __p4_compflags "b d s"
+            ;;
         -b)
             __p4_complete "$(__p4_branches)"
             return ;;
@@ -1256,6 +1284,15 @@ _p4_reopen() {
 # options: -A<flags> -a<flags> -d<flags> -f -n -N -o -t -v -c changelist#
 _p4_resolve() {
     case "$prev" in
+        -A*)
+            __p4_compflags "a b c d m t Q"
+            ;;
+        -a*)
+            __p4_compflags "s m f t y"
+            ;;
+        -d*)
+            __p4_compflags "b w l n c s u"
+            ;;
         -c)
             __p4_complete "$(__p4_changes pending)"
             return ;;
