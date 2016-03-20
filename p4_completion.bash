@@ -49,7 +49,7 @@ __p4_vars() {
 }
 
 __p4_find_cmd() {
-    for word in ${COMP_WORDS[@]:1}; do
+    for word in ${words[@]:1}; do
         if [ ${word:0:1} != "-" ]; then
             for p4cmd in ${__p4_cmds}; do
                 if [ "$word" == "$p4cmd" ]; then
@@ -66,13 +66,13 @@ __p4_find_cmd() {
 __p4_find_val() {
     local cmd=$(__p4_find_cmd)
     local opts=0
-    for i in ${!COMP_WORDS[@]}; do
+    for i in ${!words[@]}; do
         if [[ "$opts" -eq 1 ]]; then
-            if [ "${COMP_WORDS[$i]}" == "$1" ]; then
-                echo "${COMP_WORDS[(($i+1))]}"
+            if [ "${words[$i]}" == "$1" ]; then
+                echo "${words[(($i+1))]}"
                 return
             fi
-        elif [ "${COMP_WORDS[$i]}" == "$cmd" ]; then
+        elif [ "${words[$i]}" == "$cmd" ]; then
             opts=1
         fi
     done
@@ -1763,12 +1763,11 @@ __p4_global_opts() {
 }
 
 _p4() {
-    prev=${COMP_WORDS[COMP_CWORD-1]}
-    cur=${COMP_WORDS[COMP_CWORD]}
-    p4client=
-    p4user=
-    p4stream=
-    p4chstat=
+    local cword=$COMP_CWORD
+    local words=("${COMP_WORDS[@]}")
+    local cur=${words[$cword]}
+    local prev=${words[$cword-1]}
+    local p4client p4user p4stream p4chstat
 
     local cmd=$(__p4_find_cmd)
     if [ -z "$cmd" ]; then
