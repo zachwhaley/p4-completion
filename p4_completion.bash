@@ -48,16 +48,54 @@ __p4_vars() {
     echo $(p4 set | awk -F'=' '{print $1}')
 }
 
+__p4_find_cmd() {
+    for word in ${COMP_WORDS[@]:1}; do
+        if [ ${word:0:1} != "-" ]; then
+            for p4cmd in ${__p4_cmds}; do
+                if [ "$word" == "$p4cmd" ]; then
+                    echo $p4cmd
+                    return
+                fi
+            done
+        fi
+    done
+}
+
+# Takes one argument
+# 1: option to look for
+__p4_find_val() {
+    local cmd=$(__p4_find_cmd)
+    local opts=0
+    for i in ${!COMP_WORDS[@]}; do
+        if [[ "$opts" -eq 1 ]]; then
+            if [ "${COMP_WORDS[$i]}" == "$1" ]; then
+                echo "${COMP_WORDS[(($i+1))]}"
+                return
+            fi
+        elif [ "${COMP_WORDS[$i]}" == "$cmd" ]; then
+            opts=1
+        fi
+    done
+}
+
 # Takes one argument
 # 1: Status of the changes
 __p4_changes() {
+    local changes="p4 changes -m 10 "
+
+    [ -n "$1" ] && changes="$changes -s $1 "
+    [ -n "$p4client" ] && changes="$changes -c $p4client "
+    [ -n "$p4user" ] && changes="$changes -u $p4user "
+    echo $($changes | awk '{print $2}')
+}
+
+__p4_mychanges() {
     local client=$(__p4_var P4CLIENT)
     local user=$(__p4_var P4USER)
-    if [ -z $1 ]; then
-        echo $(p4 changes -c $client -u $user | awk '{print $2}')
-    else
-        echo $(p4 changes -c $client -u $user -s $1 | awk '{print $2}')
-    fi
+    local changes="p4 changes -m 10 "
+
+    [ -n "$1" ] && changes="$changes -s $1 "
+    echo $($changes -c $client -u $user | awk '{print $2}')
 }
 
 __p4_users() {
@@ -65,16 +103,22 @@ __p4_users() {
 }
 
 __p4_clients() {
-    local user=$(__p4_var P4USER)
-    echo $(p4 clients -u $user | awk '{print $2}')
+    local clients="p4 clients -m 10 "
+
+    [ -n "$p4user" ] && clients="$clients -u $p4user "
+    [ -n "$p4stream" ] && clients="$clients -S $p4stream "
+    echo $($clients | awk '{print $2}')
 }
 
 __p4_branches() {
-    echo $(p4 branches | awk '{print $2}')
+    local branches="p4 branches -m 10 "
+
+    [ -n "$p4user" ] && branches="$branches -u $p4user "
+    echo $($branches | awk '{print $2}')
 }
 
 __p4_counters() {
-    echo $(p4 counters | awk '{print $1}')
+    echo $(p4 counters -m 10 | awk '{print $1}')
 }
 
 __p4_depots() {
@@ -86,20 +130,22 @@ __p4_groups() {
 }
 
 __p4_labels() {
-    local user=$(__p4_var P4USER)
-    echo $(p4 labels -u $user | awk '{print $2}')
+    local labels="p4 labels -m 10 "
+
+    [ -n "$p4user" ] && labels="$labels -u $p4user "
+    echo $($labels | awk '{print $2}')
 }
 
 __p4_streams() {
-    echo $(p4 streams | awk '{print $1}')
+    echo $(p4 streams -m 10 | awk '{print $1}')
 }
 
 __p4_jobs() {
-    echo $(p4 jobs | awk '{print $1}')
+    echo $(p4 jobs -m 10 | awk '{print $1}')
 }
 
 __p4_keys() {
-    echo $(p4 keys | awk '{print $1}')
+    echo $(p4 keys -m 10 | awk '{print $1}')
 }
 
 ## Below are mappings to Perforce commands
@@ -110,7 +156,7 @@ __p4_keys() {
 _p4_add() {
     case "$prev" in
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_mychanges pending)"
             return ;;
         -t)
             __p4_complete "$__p4_filetypes"
@@ -186,6 +232,7 @@ _p4_branch() {
 #
 # p4 branches [-t] [-u user] [[-e|-E] nameFilter -m max]
 _p4_branches() {
+    p4user=$(__p4_find_val "-u")
     case "$prev" in
         -u)
             __p4_complete "$(__p4_users)"
@@ -220,7 +267,7 @@ _p4_change() {
             __p4_complete "-s -f -u -O -I -d -o -i -t -U"
             ;;
         *)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_changes)"
     esac
 }
 _p4_changelist() {
@@ -233,12 +280,15 @@ _p4_changelist() {
 # p4 changes [-i -t -l -L -f] [-c client] [ -e changelist# ]
 #     [-m max] [-s status] [-u user] [file[revRange] ...]
 _p4_changes() {
+    p4client=$(__p4_find_val "-c")
+    p4user=$(__p4_find_val "-u")
+    p4chstat=$(__p4_find_val "-s")
     case "$prev" in
         -c)
             __p4_complete "$(__p4_clients)"
             return ;;
         -e)
-            __p4_complete "$(__p4_changes)"
+            __p4_complete "$(__p4_changes $p4chstat)"
             return ;;
         -s)
             __p4_complete "$__p4_change_status"
@@ -285,6 +335,7 @@ _p4_clean() {
 # p4 client -i [-f]
 # p4 client -d -f --serverid=X [-Fs] name
 _p4_client() {
+    p4stream=$(__p4_find_val "-S")
     case "$prev" in
         -t)
             __p4_complete "$(__p4_clients)"
@@ -341,6 +392,7 @@ _p4_workspaces() {
 #
 # options: -c changelist# -f -n -v -m max -q
 _p4_copy() {
+    p4stream=$(__p4_find_val "-S")
     case "$prev" in
         -c)
             __p4_complete "$(__p4_changes)"
@@ -402,7 +454,7 @@ _p4_cstat() {
 _p4_delete() {
     case "$prev" in
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_mychanges pending)"
             return ;;
     esac
 
@@ -539,7 +591,7 @@ _p4_dirs() {
 _p4_edit() {
     case "$prev" in
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_mychanges pending)"
             return ;;
         -t)
             __p4_complete "$__p4_filetypes"
@@ -595,12 +647,13 @@ _p4_files() {
 #
 # p4 fix [-d] [-s status] -c changelist# jobName ...
 _p4_fix() {
+    p4chstat=$(__p4_find_val "-s")
     case "$prev" in
         -s)
             __p4_complete "$__p4_change_status"
             return ;;
         -c)
-            __p4_complete "$(__p4_changes submitted)"
+            __p4_complete "$(__p4_changes)"
             return ;;
     esac
 
@@ -620,7 +673,7 @@ _p4_fix() {
 _p4_fixes() {
     case "$prev" in
         -c)
-            __p4_complete "$(__p4_changes submitted)"
+            __p4_complete "$(__p4_changes)"
             return ;;
         -j)
             __p4_complete "$(__p4_jobs)"
@@ -766,7 +819,7 @@ _p4_integrate() {
             __p4_complete "$(__p4_branches)"
             return ;;
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_changes)"
             return ;;
         -S)
             __p4_complete "$(__p4_streams)"
@@ -989,7 +1042,7 @@ _p4_list() {
 _p4_lock() {
     case "$prev" in
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_mychanges)"
             return ;;
     esac
 
@@ -1048,7 +1101,7 @@ _p4_logout() {
 _p4_merge() {
     case "$prev" in
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_changes)"
             return ;;
     esac
 
@@ -1072,7 +1125,7 @@ _p4_merge() {
 _p4_move() {
     case "$prev" in
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_mychanges pending)"
             return ;;
         -t)
             __p4_complete "$__p4_filetypes"
@@ -1097,6 +1150,8 @@ _p4_rename() {
 # p4 opened [-a -c changelist# -C client -u user -m max -s -g] [file ...]
 # p4 opened [-a -x -m max ] [file ...]
 _p4_opened() {
+    p4client=$(__p4_find_val "-C")
+    p4user=$(__p4_find_val "-u")
     case "$prev" in
         -c)
             __p4_complete "$(__p4_changes pending)"
@@ -1238,7 +1293,7 @@ _p4_prune() {
 _p4_reconcile() {
     case "$prev" in
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_mychanges pending)"
             return ;;
     esac
 
@@ -1261,7 +1316,7 @@ _p4_rec() {
 _p4_reopen() {
     case "$prev" in
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_mychanges pending)"
             return ;;
         -t)
             __p4_complete "$__p4_filetypes"
@@ -1326,9 +1381,10 @@ _p4_resolved() {
 #
 # p4 revert [-a -n -k -w -c changelist# -C client] file ...
 _p4_revert() {
+    p4client=$(__p4_find_val "-C")
     case "$prev" in
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_mychanges pending)"
             return ;;
         -C)
             __p4_complete "$(__p4_clients)"
@@ -1351,7 +1407,7 @@ _p4_revert() {
 _p4_review() {
     case "$prev" in
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_changes)"
             return ;;
     esac
 
@@ -1362,6 +1418,7 @@ _p4_review() {
 #
 # p4 reviews [-C client] [-c changelist#] [file ...]
 _p4_reviews() {
+    p4client=$(__p4_find_val "-C")
     case "$prev" in
         -C)
             __p4_complete "$(__p4_clients)"
@@ -1408,7 +1465,7 @@ _p4_shelve() {
             __p4_complete "$__p4_submitopts"
             return ;;
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_mychanges pending)"
             return ;;
     esac
 
@@ -1429,7 +1486,7 @@ _p4_shelve() {
 _p4_status() {
     case "$prev" in
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_mychanges pending)"
             return ;;
     esac
 
@@ -1513,10 +1570,10 @@ _p4_submit() {
             __p4_complete "0 1"
             return ;;
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_mychanges pending)"
             return ;;
         -e)
-            __p4_complete "$(__p4_changes shelved)"
+            __p4_complete "$(__p4_mychanges shelved)"
             return ;;
     esac
 
@@ -1578,10 +1635,10 @@ _p4_tag() {
 _p4_unlock() {
     case "$prev" in
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_mychanges pending)"
             return ;;
         -s)
-            __p4_complete "$(__p4_changes shelved)"
+            __p4_complete "$(__p4_mychanges shelved)"
             return ;;
     esac
 
@@ -1606,7 +1663,7 @@ _p4_unshelve() {
             __p4_complete "$(__p4_mychanges shelved)"
             return ;;
         -c)
-            __p4_complete "$(__p4_changes pending)"
+            __p4_complete "$(__p4_mychanges pending)"
             return ;;
         -b)
             __p4_complete "$(__p4_branches)"
@@ -1676,19 +1733,6 @@ _p4_where() {
     __p4_filenames
 }
 
-__find_p4_cmd() {
-    for word in ${COMP_WORDS[@]:1}; do
-        if [ ${word:0:1} != "-" ]; then
-            for p4cmd in ${__p4_cmds}; do
-                if [ "$word" == "$p4cmd" ]; then
-                    echo $p4cmd
-                    return
-                fi
-            done
-        fi
-    done
-}
-
 __p4_global_opts() {
     case "$prev" in
         -c)
@@ -1721,8 +1765,12 @@ __p4_global_opts() {
 _p4() {
     prev=${COMP_WORDS[COMP_CWORD-1]}
     cur=${COMP_WORDS[COMP_CWORD]}
+    p4client=
+    p4user=
+    p4stream=
+    p4chstat=
 
-    local cmd=$(__find_p4_cmd)
+    local cmd=$(__p4_find_cmd)
     if [ -z "$cmd" ]; then
         __p4_global_opts
     elif [ "$cur" == "$cmd" ]; then
