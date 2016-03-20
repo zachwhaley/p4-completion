@@ -1775,7 +1775,8 @@ _p4() {
     elif [ "$cur" == "$cmd" ]; then
         __p4_complete "$__p4_cmds"
     else
-        eval "_p4_${cmd}"
+        local compfunc="_p4_${cmd}"
+        declare -f $compfunc >/dev/null && $compfunc
     fi
 }
 
