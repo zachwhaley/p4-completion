@@ -18,7 +18,7 @@ __p4_directories() {
 # Takes one argument
 # 1: String of flags
 __p4_compflags() {
-    local opts=$(echo "$1" | sed "s/[${cur}]//g" | sed -r "s/[^ ]+/${cur}&/g")
+    local opts=$(echo "${1//[${cur}]}" | sed -r "s/[^ ]+/${cur}&/g")
     __p4_complete "$opts"
 }
 
