@@ -1602,6 +1602,9 @@ _p4_unlock() {
 #          [-b branch|-S stream [-P parent]]
 _p4_unshelve() {
     case "$prev" in
+        -s)
+            __p4_complete "$(__p4_mychanges shelved)"
+            return ;;
         -c)
             __p4_complete "$(__p4_changes pending)"
             return ;;
@@ -1615,7 +1618,7 @@ _p4_unshelve() {
 
     case "$cur" in
         -*)
-            __p4_complete "-Af -As -f -n -c -b -S -P"
+            __p4_complete "-s -Af -As -f -n -c -b -S -P"
             ;;
         *)
             __p4_filenames
