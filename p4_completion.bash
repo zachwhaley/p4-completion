@@ -15,7 +15,7 @@ __p4_directories() {
     COMPREPLY=( $(compgen -d ${cur} ) )
 }
 
-# Takes one arguments
+# Takes one argument
 # 1: String of flags
 __p4_compflags() {
     local opts=$(echo "$1" | sed "s/[${cur}]//g" | sed -r "s/[^ ]+/${cur}&/g")
