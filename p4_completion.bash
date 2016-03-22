@@ -1,6 +1,11 @@
 # A bash completion script for Perforce 2015.2
 # Author: Zach Whaley, zachbwhaley@gmail.com
 
+if ! type _init_completion >/dev/null; then
+    echo "bash-completion is needed for p4_completion!
+    See: http://bash-completion.alioth.debian.org"
+fi
+
 # Takes one argument
 # 1: String of commplete strings
 __p4_complete() {
@@ -1763,12 +1768,10 @@ __p4_global_opts() {
 }
 
 _p4() {
-    local cword=$COMP_CWORD
-    local words=("${COMP_WORDS[@]}")
-    local cur=${words[$cword]}
-    local prev=${words[$cword-1]}
-    local p4client p4user p4stream p4chstat
+    local cur prev words cword
+    _init_completion cur prev words cword || return
 
+    local p4client p4user p4stream p4chstat
     local cmd=$(__p4_find_cmd)
     if [ -z "$cmd" ]; then
         __p4_global_opts
@@ -1780,4 +1783,4 @@ _p4() {
     fi
 }
 
-complete -o filenames -o bashdefault -F _p4 p4
+complete -o bashdefault -o default -F _p4 p4
