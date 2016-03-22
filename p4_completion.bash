@@ -53,11 +53,12 @@ __p4_compfilerev() {
     esac
 }
 
-# Takes one argument
-# 1: String of flags
+# Generate completion reply for flagged options, like -d which can add more than one flag to an
+# option, e.g. p4 diff -dub
+# 1. Space separated string of possible completion flags
+# 2. A prefix of the existing flags to be added to each possible completion word (e.g. -dub)
 __p4_compflags() {
-    local opts=$(echo "${1//[${cur}]}" | sed -r "s/[^ ]+/${cur}&/g")
-    __p4_complete "$opts"
+    __p4_complete "${1//[${2-$cur}]/}" "${2-$cur}" ""
 }
 
 __p4_g_opts="-b -c -C -d -H -I -G -L -p -P -q -r -s -Q -u -x -z"
