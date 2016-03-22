@@ -6,10 +6,16 @@ if ! type _init_completion >/dev/null; then
     See: http://bash-completion.alioth.debian.org"
 fi
 
-# Takes one argument
-# 1: String of commplete strings
+# Generate completion reply
+# Accepts 1 to 4 arguments:
+# 1. Space separated string of possible completion words
+# 2. A prefix to be added to each possible completion word
+# 3. Generate possible completion matches for this word
+# 4. A suffix to be added to each possible completion word. Can be used to prevent completing a single result
 __p4_complete() {
-    COMPREPLY=( $(compgen -W "$1" -- ${cur}) )
+    local IFS=$' \t\n' cur_="${3-$cur}"
+
+    COMPREPLY=( $(compgen -P "${2-}" -W "$1" -S "${4-}" -- "$cur_") )
 }
 
 __p4_filenames() {
@@ -18,6 +24,33 @@ __p4_filenames() {
 
 __p4_directories() {
     COMPREPLY=( $(compgen -d ${cur} ) )
+}
+
+# Generate completion reply for files with revisions.
+# e.g. file@label or file#revision
+__p4_compfilerev() {
+    compopt -o nospace
+    local file prefix cur_="$cur"
+
+    case "$cur_" in
+        *\#*)
+            file="${cur_%%#*}"
+            prefix="$file#"
+            cur_="${cur_#*#}"
+            __p4_complete "$(__p4_filelog_revs "$file") have head none" "$prefix" "$cur_"
+            ;;
+        *@*)
+            prefix="${cur_%%?(\\)@*}@"
+            cur_="${cur_#*@}"
+            __p4_complete "$(__p4_labels) now" "$prefix" "$cur_"
+            ;;
+        *)
+            local files=( $(compgen -f "$cur_") )
+            if [ ${#files[@]} -eq 1 ]; then
+                __p4_complete "# @" "$files" ""
+            fi
+            ;;
+    esac
 }
 
 # Takes one argument
@@ -101,6 +134,11 @@ __p4_mychanges() {
 
     [ -n "$1" ] && changes="$changes -s $1 "
     echo $($changes -c $client -u $user | awk '{print $2}')
+}
+
+__p4_filelog_revs() {
+    local revs=$(p4 filelog -m 10 $1 | awk '/^... #[0-9]/ {print $2}')
+    echo "${revs//\#/}"
 }
 
 __p4_users() {
@@ -190,7 +228,7 @@ _p4_annotate() {
             __p4_complete "-a -c -i -I -q -t -d"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -308,7 +346,7 @@ _p4_changes() {
             __p4_complete "-i -t -l -L -f -c -e -m -s -u"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
     esac
 }
 _p4_changelists() {
@@ -415,7 +453,7 @@ _p4_copy() {
             __p4_complete "-c -f -n -v -m -q -b -r -s -S -P -F -r"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -535,7 +573,7 @@ _p4_diff() {
             __p4_complete "-d -f -m -Od -s -t"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -565,7 +603,7 @@ _p4_diff2() {
             __p4_complete "-d -Od -q -t -u -b -S -P"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -585,7 +623,7 @@ _p4_dirs() {
             __p4_complete "-C -D -H -S"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -628,7 +666,7 @@ _p4_filelog() {
             __p4_complete "-c -h -i -l -L -t -m -p -s"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -643,7 +681,7 @@ _p4_files() {
             __p4_complete "-a -A -e -m -U"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -690,7 +728,7 @@ _p4_fixes() {
             __p4_complete "-i -m -c -j"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -723,7 +761,7 @@ _p4_fstat() {
             __p4_complete "-F -L -T -m -r -c -e -O -R -S -A -U"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -739,7 +777,7 @@ _p4_grep() {
             __p4_complete "-a -i -n -A -B -C -t -s -v -l -L -F -G -e"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -836,7 +874,7 @@ _p4_integrate() {
             __p4_complete "-c -Di -f -h -O -n -m -R -q -v -b -r -s -S -P"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -884,7 +922,7 @@ _p4_interchanges() {
             __p4_complete "-f -l -r -t -u -F -b -s -S -P"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -930,7 +968,7 @@ _p4_jobs() {
             __p4_complete "-e -i -l -m -r -R"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -994,7 +1032,7 @@ _p4_labels() {
             __p4_complete "-t -u -e -E -m -a -s -U"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -1014,7 +1052,7 @@ _p4_labelsync() {
             __p4_complete "-a -d -g -n -q -l"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -1035,7 +1073,7 @@ _p4_list() {
             __p4_complete "-l -C -M -d"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -1118,7 +1156,7 @@ _p4_merge() {
             __p4_complete "--from"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -1216,7 +1254,7 @@ _p4_populate() {
             __p4_complete "-d -f -m -n -o -b -r -s -S -P"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -1231,7 +1269,7 @@ _p4_print() {
             __p4_complete "-a -A -k -o -q -m -U"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -1516,7 +1554,7 @@ _p4_sizes() {
             __p4_complete "-a -S -s -z -b -h -H -m -A -U"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -1608,7 +1646,7 @@ _p4_sync() {
             __p4_complete "-f -L -n -N -k -q -r -m -s -p"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -1628,7 +1666,7 @@ _p4_tag() {
             __p4_complete "-d -g -n -U -l"
             ;;
         *)
-            __p4_filenames
+            __p4_compfilerev
             ;;
     esac
 }
@@ -1769,7 +1807,7 @@ __p4_global_opts() {
 
 _p4() {
     local cur prev words cword
-    _init_completion cur prev words cword || return
+    _init_completion -n '@' cur prev words cword || return
 
     local p4client p4user p4stream p4chstat
     local cmd=$(__p4_find_cmd)
