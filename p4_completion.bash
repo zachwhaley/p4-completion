@@ -15,6 +15,7 @@ fi
 __p4_complete() {
     local IFS=$' \t\n' cur_="${3-$cur}"
 
+    [[ $cur_ == *:* ]] && cur_="${cur#*:}"
     COMPREPLY=( $(compgen -P "${2-}" -W "$1" -S "${4-}" -- "$cur_") )
 }
 
@@ -1808,7 +1809,7 @@ __p4_global_opts() {
 
 _p4() {
     local cur prev words cword
-    _init_completion -n '@' cur prev words cword || return
+    _init_completion -n '@:' cur prev words cword || return
 
     local p4client p4user p4stream p4chstat
     local cmd=$(__p4_find_cmd)
