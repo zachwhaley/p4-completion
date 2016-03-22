@@ -23,7 +23,7 @@ __p4_filenames() {
 }
 
 __p4_directories() {
-    COMPREPLY=( $(compgen -d ${cur} ) )
+    COMPREPLY=( $(compgen -d ${cur}) )
 }
 
 # Generate completion reply for files with revisions.
