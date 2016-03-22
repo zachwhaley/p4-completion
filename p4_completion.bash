@@ -477,7 +477,7 @@ _p4_delete() {
 _p4_depot() {
     case "$prev" in
         -t)
-            __p4_complete ""
+            __p4_complete "local remote spec stream unload archive tangent"
             return ;;
     esac
 
@@ -495,7 +495,7 @@ _p4_depot() {
 #
 # p4 depots
 _p4_depots() {
-    __p4_complete ""
+    compopt +o default
 }
 
 # describe -- Display a changelist description
