@@ -81,11 +81,11 @@ __p4_help_keywords="simple commands charset environment filetypes jobview revisi
 # Takes one argument
 # 1: The Perforce environment variable to return
 __p4_var() {
-    echo $(p4 set $1 | awk '{split($1,a,"="); print a[2]}')
+    echo $(command p4 set $1 | awk '{split($1,a,"="); print a[2]}')
 }
 
 __p4_vars() {
-    echo $(p4 set | awk -F'=' '{print $1}')
+    echo $(command p4 set | awk -F'=' '{print $1}')
 }
 
 __p4_find_cmd() {
@@ -121,7 +121,7 @@ __p4_find_val() {
 # Takes one argument
 # 1: Status of the changes
 __p4_changes() {
-    local changes="p4 changes -m 10 "
+    local changes="command p4 changes -m 10 "
 
     [ -n "$1" ] && changes="$changes -s $1 "
     [ -n "$p4client" ] && changes="$changes -c $p4client "
@@ -132,23 +132,23 @@ __p4_changes() {
 __p4_mychanges() {
     local client=$(__p4_var P4CLIENT)
     local user=$(__p4_var P4USER)
-    local changes="p4 changes -m 10 "
+    local changes="command p4 changes -m 10 "
 
     [ -n "$1" ] && changes="$changes -s $1 "
     echo $($changes -c $client -u $user | awk '{print $2}')
 }
 
 __p4_filelog_revs() {
-    local revs=$(p4 filelog -m 10 $1 | awk '/^... #[0-9]/ {print $2}')
+    local revs=$(command p4 filelog -m 10 $1 | awk '/^... #[0-9]/ {print $2}')
     echo "${revs//\#/}"
 }
 
 __p4_users() {
-   echo $(p4 users | awk '{print $1}')
+   echo $(command p4 users | awk '{print $1}')
 }
 
 __p4_clients() {
-    local clients="p4 clients -m 10 "
+    local clients="command p4 clients -m 10 "
 
     [ -n "$p4user" ] && clients="$clients -u $p4user "
     [ -n "$p4stream" ] && clients="$clients -S $p4stream "
@@ -156,41 +156,41 @@ __p4_clients() {
 }
 
 __p4_branches() {
-    local branches="p4 branches -m 10 "
+    local branches="command p4 branches -m 10 "
 
     [ -n "$p4user" ] && branches="$branches -u $p4user "
     echo $($branches | awk '{print $2}')
 }
 
 __p4_counters() {
-    echo $(p4 counters -m 10 | awk '{print $1}')
+    echo $(command p4 counters -m 10 | awk '{print $1}')
 }
 
 __p4_depots() {
-    echo $(p4 depots | awk '{print $2}')
+    echo $(command p4 depots | awk '{print $2}')
 }
 
 __p4_groups() {
-    echo $(p4 groups | awk '{print $2}')
+    echo $(command p4 groups | awk '{print $2}')
 }
 
 __p4_labels() {
-    local labels="p4 labels -m 10 "
+    local labels="command p4 labels -m 10 "
 
     [ -n "$p4user" ] && labels="$labels -u $p4user "
     echo $($labels | awk '{print $2}')
 }
 
 __p4_streams() {
-    echo $(p4 streams -m 10 | awk '{print $1}')
+    echo $(command p4 streams -m 10 | awk '{print $1}')
 }
 
 __p4_jobs() {
-    echo $(p4 jobs -m 10 | awk '{print $1}')
+    echo $(command p4 jobs -m 10 | awk '{print $1}')
 }
 
 __p4_keys() {
-    echo $(p4 keys -m 10 | awk '{print $1}')
+    echo $(command p4 keys -m 10 | awk '{print $1}')
 }
 
 ## Below are mappings to Perforce commands
