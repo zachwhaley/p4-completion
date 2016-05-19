@@ -1,7 +1,7 @@
 p4_completion
 =============
 
-Bash completion for Perforce.
+Perforce Bash completion.
 
 Installation
 ------------
