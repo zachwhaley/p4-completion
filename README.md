@@ -17,6 +17,8 @@ Or add `p4_completion.bash` to your system's `bash_completion.d` directory.
 ```bash
 # Linux
 $ sudo cp p4_completion.bash /etc/bash_completion.d/p4
+
 # macOS
-$ sudo cp p4_completion.bash /opt/local/etc/bash_completion.d/p4
+$ brew tap zachwhaley/beer
+$ brew install p4-completion
 ```
