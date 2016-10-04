@@ -2,7 +2,7 @@
 # Author: Zach Whaley, zachbwhaley@gmail.com
 
 if ! type _init_completion >/dev/null; then
-    echo "bash-completion is needed for p4_completion!
+    echo "bash-completion is needed for p4-completion!
     See: http://bash-completion.alioth.debian.org"
 fi
 

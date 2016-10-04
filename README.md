@@ -1,4 +1,4 @@
-# p4_completion
+# p4-completion
 
 Perforce Bash completion.
 
@@ -6,16 +6,16 @@ Perforce Bash completion.
 
 ### Linux
 
-Source `p4_completion.bash` by adding this to your `bashrc`
+Source `p4-completion.sh` by adding this to your `bashrc`
 
 ```bash
-source /path/to/p4_completion.bash
+source /path/to/p4-completion.sh
 ```
 
-Or add `p4_completion.bash` to your system's `bash_completion.d` directory.
+Or add `p4-completion.sh` to your system's `bash_completion.d` directory.
 
 ```bash
-sudo cp p4_completion.bash /etc/bash_completion.d/p4
+sudo cp p4-completion.sh /etc/bash_completion.d/p4
 ```
 
 ### macOS
