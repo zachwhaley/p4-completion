@@ -1,12 +1,10 @@
-p4_completion
-=============
+# p4_completion
 
 Perforce Bash completion.
 
-Installation
-------------
+## Installation
 
-## Linux
+### Linux
 
 Source `p4_completion.bash` by adding this to your `bashrc`
 
@@ -20,7 +18,7 @@ Or add `p4_completion.bash` to your system's `bash_completion.d` directory.
 sudo cp p4_completion.bash /etc/bash_completion.d/p4
 ```
 
-## macOS
+### macOS
 
 ```bash
 brew tap zachwhaley/beer
