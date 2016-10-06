@@ -309,7 +309,7 @@ __p4_compfilerev() {
         *@*)
             prefix="${cur_%%?(\\)@*}@"
             cur_="${cur_#*@}"
-            __p4_complete "$(__p4_labels) now" "$prefix" "$cur_"
+            __p4_complete "$(__p4_labels "$cur_") now" "$prefix" "$cur_"
             ;;
         *)
             local files=( $(compgen -f "$cur_") )
@@ -416,6 +416,7 @@ __p4_users() {
 __p4_clients() {
     local clients="command p4 clients -m 10 "
 
+    [ -n "${1-$cur}" ] && clients="$clients -e ${1-$cur}* "
     [ -n "$p4user" ] && clients="$clients -u $p4user "
     [ -n "$p4stream" ] && clients="$clients -S $p4stream "
     echo $($clients | awk '{print $2}')
@@ -424,6 +425,7 @@ __p4_clients() {
 __p4_branches() {
     local branches="command p4 branches -m 10 "
 
+    [ -n "${1-$cur}" ] && branches="$branches -e ${1-$cur}* "
     [ -n "$p4user" ] && branches="$branches -u $p4user "
     echo $($branches | awk '{print $2}')
 }
@@ -443,6 +445,7 @@ __p4_groups() {
 __p4_labels() {
     local labels="command p4 labels -m 10 "
 
+    [ -n "${1-$cur}" ] && labels="$labels -e ${1-$cur}* "
     [ -n "$p4user" ] && labels="$labels -u $p4user "
     echo $($labels | awk '{print $2}')
 }
