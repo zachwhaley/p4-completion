@@ -296,7 +296,7 @@ __p4_directories() {
 # Generate completion reply for files with revisions.
 # e.g. file@label or file#revision
 __p4_compfilerev() {
-    compopt -o nospace
+    type compopt &>/dev/null && compopt -o nospace
     local file prefix cur_="$cur"
 
     case "$cur_" in
@@ -806,7 +806,7 @@ _p4_depot() {
 #
 # p4 depots
 _p4_depots() {
-    compopt +o default
+    type compopt &>/dev/null && compopt +o default
 }
 
 # describe -- Display a changelist description
