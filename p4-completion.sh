@@ -1,6 +1,9 @@
 # A bash completion script for Perforce 2015.2
 # Author: Zach Whaley, zachbwhaley@gmail.com
 
+# Turn on extended globbing and programmable completion
+shopt -s extglob progcomp
+
 # If bash-completion is not installed, use the functionality from bash-completion 1.3
 # Copied from https://github.com/scop/bash-completion/blob/7c81ef895455d0f7543c65789ff62808e7465578/bash_completion
 if ! type _init_completion &>/dev/null; then
@@ -307,14 +310,24 @@ __p4_compfilerev() {
             __p4_complete "$(__p4_filelog_revs "$file") have head none" "$prefix" "$cur_"
             ;;
         *@*)
-            prefix="${cur_%%?(\\)@*}@"
-            cur_="${cur_#*@}"
-            __p4_complete "$(__p4_labels "$cur_") now" "$prefix" "$cur_"
+            if ! shopt -q hostcomplete; then
+                # Disable @label completion if the user has disabled hostcomplete.
+                # This is done by default for those that have bash-completion installed,
+                # but for those that don't, hostcomplete will do weird things if we try to
+                # complete words with an @ symbol.
+                # To disable hostcomplete, run `shopt -u hostcomplete`
+                prefix="${cur_%%?(\\)@*}@"
+                cur_="${cur_#*@}"
+                __p4_complete "$(__p4_labels "$cur_") now" "$prefix" "$cur_"
+            fi
             ;;
         *)
             local files=( $(compgen -f "$cur_") )
             if [ ${#files[@]} -eq 1 ]; then
-                __p4_complete "# @" "$files" ""
+                if ! shopt -q hostcomplete; then
+                    # Only suggest @ and # as a completion if the user has disabled hostcomplete.
+                    __p4_complete "# @" "$files" ""
+                fi
             fi
             ;;
     esac
@@ -2078,7 +2091,7 @@ __p4_global_opts() {
 
 _p4() {
     local cur prev words cword
-    _init_completion -n '@:' cur prev words cword || return
+    _init_completion -n : cur prev words cword || return
 
     local p4client p4user p4stream p4chstat
     local cmd=$(__p4_find_cmd)
