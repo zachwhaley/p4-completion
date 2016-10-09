@@ -311,8 +311,8 @@ __p4_compfilerev() {
             ;;
         *@*)
             if ! shopt -q hostcomplete; then
-                # Disable @label completion if the user has disabled hostcomplete.
-                # This is done by default for those that have bash-completion installed,
+                # Disable file@label completion if the user has enabled hostcomplete.
+                # hostcomplete is disabled by default for those that have bash-completion installed,
                 # but for those that don't, hostcomplete will do weird things if we try to
                 # complete words with an @ symbol.
                 # To disable hostcomplete, run `shopt -u hostcomplete`
